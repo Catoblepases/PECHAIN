@@ -1,0 +1,6 @@
+{
+    "cmake.cmakePath": "C:/msys64/mingw64/bin/cmake",
+    "editor.formatOnSave": true,
+    "clang-format.executable": "C:/Users/Catoblepas/.vscode/extensions/ms-vscode.cpptools-1.7.1/LLVM/bin/clang-format.exe",
+    "python.pythonPath": "C:\\ProgramData\\Anaconda3\\python.exe",
+}
