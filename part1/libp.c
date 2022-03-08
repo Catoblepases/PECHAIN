@@ -11,8 +11,8 @@ int is_prime_naive(long p) {
     return 1;
 }
 
-int modpow_naive(long a, long m, long n) {
-    int res = 1;
+long modpow_naive(long a, long m, long n) {
+    long res = 1;
     for (int i = 0; i < m; i++) {
         res *= a;
         res = res % n;
@@ -78,13 +78,13 @@ long random_prime_number(int low_size, int up_size, int k) {
         up_size = 32;
     }
     if (low_size < 0) {
-        low_size == 0;
+        low_size = 0;
     }
     long n   = rand_long(1 << low_size, 1 << up_size);
     long num = 0;
     while (is_prime_miller(n, k) == 0) {
         if (num++ >= (1 << 16)) {
-            printf("erreur after %d\n", num);
+            printf("erreur after %ld\n", num);
             exit(-1);
         }
         n = rand_long(1 << low_size, 1 << up_size);
