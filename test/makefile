@@ -1,6 +1,6 @@
 CFLAGS=-Wall
 EXE_OUTPUT=$(D_ROOT)/build/tests
-TEST_FILES = rsa pro
+TEST_FILES = rsa pro libp sgn key
 
 all:
 
@@ -13,10 +13,11 @@ run: $(TEST_FILES)
 		echo  ;\
 		./$$ftest; \
 	done
-	echo $(TEST_FILES:%=$(D_LIB)/%.o)
+# echo $(TEST_FILES:%=$(D_LIB)/%.o)
 
 clean :
-	rm -f *.o main
+	rm -f *.o
+	rm -f *.exe
 
 $(TEST_FILES): %: $(D_LIB)/%.o %.c
-	$(CC) $(CFLAGS) -o $@ $@.c $(TEST_FILES:%=$(D_LIB)/%.o) $(D_LIB)/libp.o
+	$(CC) $(CFLAGS) -o $@ $@.c $(TEST_FILES:%=$(D_LIB)/%.o)

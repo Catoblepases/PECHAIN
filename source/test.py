@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 
-data = pd.read_csv("q1_5.csv")
+data = pd.read_csv("source/q1_5.csv")
 time1 = data["time1(ms)"]
 time2 = data["time2(ms)"]
 m = data["m"]
