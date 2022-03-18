@@ -1,9 +1,10 @@
-#include "../scr/rsa.h"
-#include "../scr/libp.h"
+#include "scr/rsa.h"
+#include "scr/libp.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 int main() {
     srand(time(NULL));

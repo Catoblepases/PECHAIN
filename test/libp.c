@@ -5,12 +5,16 @@
 #include <time.h>
 
 void q1_5() {
-    FILE *f = fopen("source/q1_5.csv", "w");
+    FILE *f = fopen("q1_5.csv", "w");
     fprintf(f, "m,time1(ms),time2(ms)\n");
     time_t ini, final;
     long   a, m, n;
-    long   N1 = 1000, N2 = 100;
+    long   N1 = 100000, N2 = 100;
     for (m = 0; m < 1 << 16; m += 10) {
+        if (m > 1 << 10) {
+            N1 = 10000;
+            N2 = 5;
+        }
         a   = rand_long(1, 1 << 8);
         n   = rand_long(1, 1 << 8);
         ini = clock();
@@ -34,7 +38,7 @@ void q1_5() {
 void q1_2() {
     int   fin = 0, ini = 0, b = 0;
     long  p, res;
-    FILE *f = fopen("source/q1_2.csv", "w");
+    FILE *f = fopen("q1_2.csv", "w");
     fprintf(f, "m,time(ms)\n");
     for (int i = 0; i < 100; i++) {
         fin = 0, ini = 0;

@@ -51,7 +51,7 @@ char *decrypt(int64 *crypted, int size, int64 u, int64 n) {
     for (int i = 0; i < size; i++) {
         tmp  = modpow(crypted[i], u, n);
         d[i] = tmp;
-        printf("(%d-%lld) ", d[i], tmp);
+        // printf("(%d-%lld) ", d[i], tmp);
     }
     return d;
 }
