@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 *.csv
+*.txt
 
 # Object files
 *.o

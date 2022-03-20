@@ -12,7 +12,7 @@ void init_pair_keys(Key *pKey, Key *sKey, int low_size, int up_size) {
     // Generation de cle:
     int64 p = random_prime_number(low_size, up_size, 5000);
     int64 q = random_prime_number(low_size, up_size, 5000);
-    printf("p=%lld, q=%lld\n", p, q);
+    // printf("p=%lld, q=%lld\n", p, q);
     int64 n, s, u;
     generate_key_values(p, q, &n, &s, &u);
     init_key(pKey, s, n);

@@ -37,12 +37,16 @@ void generate_random_data(int nv, int nc) {
     // genere nv couples de cles (publique, secrete) diﬀerents representant les nv citoyens,
     // cree un fchier keys.txt contenant tous ces couples de cles (un couple par ligne),
     FILE *fKey = fopen("keys.txt", "w");
+    fprintf(fKey, "keyPublic,keySecret\n");
+
     Key * pk[nv], *sk[nv];
+    char *kkey;
     for (int i = 0; i < nv; i++) {
-        init_pair_keys(pk[i], sk[i], 15, 16);
-        fgets(key_to_str(pk[i]), 16 >> 1, fKey);
-        fgets(key_to_str(sk[i]), 16 >> 1, fKey);
-        fprintf(fKey, "\n");
+        pk[i] = malloc(sizeof(Key));
+        sk[i] = malloc(sizeof(Key));
+        init_pair_keys(pk[i], sk[i], 3, 7);
+        kkey = key_to_str(pk[i]);
+        fprintf(fKey, "%s\n", kkey);
     }
     // selectionne nc cles publiques aleatoirement pour defnir les nc candidats,
     // cree un fchier candidates.txt contenant la cle publique de tous les candidats (une cle
@@ -52,14 +56,38 @@ void generate_random_data(int nv, int nc) {
     int candidate[nc];
     for (int i = 0; i < nc; i++) {
         candidate[i] = rand() % nv;
-        fgets(key_to_str(pk[candidate[i]]), 16 >> 1, fCandidate);
-        fprintf(fCandidate, "\n");
+        fprintf(fCandidate, "%d, %s\n", i + 1, key_to_str(pk[candidate[i]]));
     }
-    // genere une declaration de vote signee pour chaque citoyen (candidat choisi aleatoirement),
-    // cree un fchier declarations.txt contenant toutes les declarations signees (une declaration
-    // par ligne)
-    FILE *fDecl = fopen("declarations.txt", "w");
-    fclose(fKey);
-    fclose(fCandidate);
+    // genere une declaration de vote signee pour chaque citoyen (candidat choisi
+    // aleatoirement),
+    // cree un fchier declarations.txt contenant toutes les declarations signees (une
+    // declaration par ligne)
+    FILE *     fDecl = fopen("declarations.txt", "w");
+    Signature *tmp;
+    char       vote[1 << 8];
+
+    int64 *mm;
+
+    for (int i = 0; i < nv; i++) {
+        sprintf(vote, "00%d", rand() % nc + 1);
+        // printf("%s %d ", vote, strlen(vote));
+
+        Key *pKey = malloc(sizeof(Key));
+        Key *sKey = malloc(sizeof(Key));
+        init_pair_keys(pKey, sKey, 3, 7);
+        mm = encrypt(vote, pKey->val, pKey->n);
+        // mm = encrypt(vote, sk[i]->val, sk[i]->n);
+        // print_long_vector(mm, strlen(vote));
+
+        tmp = sign(vote, sKey);
+        fprintf(fDecl, "%s\n", signature_to_str(tmp));
+    }
+
+    for (int i = 0; i < nv; i++) {
+        free(sk[i]);
+        free(pk[i]);
+    }
     fclose(fDecl);
+    fclose(fCandidate);
+    fclose(fKey);
 }
