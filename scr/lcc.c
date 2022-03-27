@@ -37,6 +37,7 @@ CellKey* read_public_keys(char* fichier){
 void print_list_keys(CellKey* LCK){
     while(LCK!=NULL){
         printf("%s\n",key_to_str (LCK->data));
+        LCK=LCK->next;
     }
 }
 

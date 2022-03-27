@@ -1,12 +1,11 @@
 #include "key.h"
-#ifndef  _LISTECHAINEE
-#define _LISTECHAINEE
+#ifndef  _LISTECHAINEEDECLES
+#define _LISTECHAINEEDECLES
 
-typedef struct _cellKey{
-    Key*data;
-    struct _cellKey* next;
-} CellKey;
-
+typedef struct cellKey{
+    Key* data;
+    struct cellKey* next;
+}CellKey;
 CellKey* create_cell_key(Key* key);
 void inserer_en_tete(CellKey* c,Key* k);
 CellKey* read_public_keys(char* fichier);
