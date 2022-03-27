@@ -58,7 +58,7 @@ void q1_2() {
 }
 
 int main(int argc, char const *argv[]) {
-    q1_2();
-    q1_5();
+    // q1_2();
+    // q1_5();
     return 0;
 }

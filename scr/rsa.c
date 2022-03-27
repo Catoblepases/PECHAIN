@@ -1,9 +1,11 @@
 #include "rsa.h"
+#include "libp.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
 
 int64 extended_gcd(int64 s, int64 t, int64 *u, int64 *v) {
     if (t == 0) {

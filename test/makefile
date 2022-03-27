@@ -13,7 +13,6 @@ run: $(TEST_FILES)
 		echo  ;\
 		./$$ftest; \
 	done
-# echo $(TEST_FILES:%=$(D_LIB)/%.o)
 
 clean :
 	rm -f *.o

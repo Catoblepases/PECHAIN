@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-int main(void) {
+
+def test1() {
     srand(time(NULL));
     // Testing Init Keys
     Key *pKey = malloc(sizeof(Key));
@@ -48,5 +49,10 @@ int main(void) {
     free(sKey);
     free(pKeyC);
     free(sKeyC);
+}
+int main(void) {
+    // test1();
+    // Creation de donnees pour simuler le processus de vote
+    generate_random_data(100, 10);
     return 0;
 }

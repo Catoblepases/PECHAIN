@@ -36,11 +36,11 @@ char *signature_to_str(Signature *sgn) {
 }
 
 Signature *str_to_signature(char *str) {
-    int   len     = strlen(str);
-    long *content = (long *) malloc(sizeof(long) * len);
-    int   num     = 0;
-    char  buffer[256];
-    int   pos = 0;
+    int    len     = strlen(str);
+    int64 *content = (int64 *) malloc(sizeof(int64) * len);
+    int    num     = 0;
+    char   buffer[256];
+    int    pos = 0;
     for (int i = 0; i < len; i++) {
         if (str[i] != '#') {
             buffer[pos] = str[i];
@@ -48,7 +48,7 @@ Signature *str_to_signature(char *str) {
         } else {
             if (pos != 0) {
                 buffer[pos] = '\0';
-                sscanf(buffer, "%lx", &(content[num]));
+                sscanf(buffer, "%llx", &(content[num]));
                 num = num + 1;
                 pos = 0;
             }

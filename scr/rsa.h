@@ -1,6 +1,7 @@
+#include "libp.h"
+
 #ifndef __RSA
 #define __RSA
-#include "libp.h"
 int64  extended_gcd(int64 s, int64 t, int64 *u, int64 *v);
 void   generate_key_values(int64 p, int64 q, int64 *n, int64 *s, int64 *u);
 int64 *encrypt(char *chaine, int64 s, int64 n);
