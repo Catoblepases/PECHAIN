@@ -8,7 +8,6 @@ typedef struct cellKey {
 } CellKey;
 
 CellKey *create_cell_key(Key *key);
-void     add_head(CellKey **c, Key *k);
 CellKey *read_public_keys(char *fichier);
 void     print_list_keys(CellKey *LCK);
 void     delete_cell_key(CellKey *c);

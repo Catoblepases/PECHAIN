@@ -9,19 +9,27 @@ CellProtected *create_cell_protected(Protected *pr) {
     return LCP;
 }
 
-void add_head(CellProtected **LCP, Protected *p) {
-    CellProtected *new = create_cell_protected(p);
+void add_head_LCP(CellProtected **LCP, Protected *pr) {
+    CellProtected *new = create_cell_protected(pr);
     new->next          = *LCP;
     *LCP               = new;
 }
 
-void read_protected(char *fichier) {
-    FILE          *fic = fopen(fichier, "r");
-    char           tab[1 << 12];
-    CellProtected *LCP = (CellProtected *) malloc(sizeof(CellProtected));
-    while (fgets(tab, 1 << 12, fic)) {
-        add_head(&LCP, str_to_protected(tab));
+CellProtected *read_protected(char *fileName) {
+    FILE          *f = fopen(fileName, "r");
+    char           buf[1 << 12];
+    CellProtected *LCP = NULL;
+    Protected     *pr;
+    while (fgets(buf, 1 << 12, f)) {
+        pr = str_to_protected(buf);
+        if (!LCP) {
+            LCP = create_cell_protected(pr);
+        } else {
+            add_head_LCP(&LCP, pr);
+        }
     }
+    fclose(f);
+    return LCP;
 }
 
 void print_list_protected(CellProtected *LCP) {
