@@ -1,7 +1,7 @@
 EXE_OUTPUT=$(D_ROOT)/build/
 CFLAGS=-Wall
 
-OBJECTS = libp rsa sgn pro key lcc lcp
+OBJECTS = libp rsa sgn pro key lck lcp
 
 all: $(OBJECTS:=.o)
 

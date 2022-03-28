@@ -1,6 +1,7 @@
 CFLAGS=-Wall
 EXE_OUTPUT=$(D_ROOT)/build/tests
-TEST_FILES = rsa pro libp sgn key
+# TEST_FILES = libp key lck rsa
+TEST_FILES = rsa pro libp sgn key lck
 
 all:
 

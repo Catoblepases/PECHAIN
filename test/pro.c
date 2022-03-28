@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-def test1() {
+void test1() {
     srand(time(NULL));
     // Testing Init Keys
     Key *pKey = malloc(sizeof(Key));
