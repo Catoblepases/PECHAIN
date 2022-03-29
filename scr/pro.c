@@ -8,19 +8,19 @@
 
 /**alloue et initialise structure protected
  * (cette fonbCandidatetion ne verife pas si la signature est valide)*/
-Protected *init_protected(Key *pKeyey, char *mess, Signature *sgn) {
+Protected *init_protected(Key *pKey, char *mess, Signature *sgn) {
     Protected *pr = (Protected *) malloc(sizeof(Protected));
     pr->mess      = strdup(mess);
     pr->sgn       = sgn;
-    pr->pKeyey    = (Key *) malloc(sizeof(Key));
-    init_key(pr->pKeyey, pKeyey->val, pKeyey->n);
+    pr->pKey      = (Key *) malloc(sizeof(Key));
+    init_key(pr->pKey, pKey->val, pKey->n);
     return pr;
 }
 
 /**verife que la signature contenue dans
  * pr correspond bien au message et a la personne contenus dans pr.*/
 int verify(Protected *pr) {
-    char *mess = decrypt(pr->sgn->content, pr->sgn->size, pr->pKeyey->val, pr->pKeyey->n);
+    char *mess = decrypt(pr->sgn->content, pr->sgn->size, pr->pKey->val, pr->pKey->n);
     int   out  = strcmp(mess, pr->mess);
     free(mess);
     if (out == 0) return 1;
@@ -31,7 +31,7 @@ int verify(Protected *pr) {
  * Retourne une chaîne de caractères protégée, La chaîne doit contenir dans l'ordre:
  * - la clé publique de l'expéditeur,- son message,- sa signature, séparés par un espace */
 char *protected_to_str(Protected *pr) {
-    char *out = malloc(sizeof(char) * 1 << 16), *tmp = key_to_str(pr->pKeyey);
+    char *out = malloc(sizeof(char) * 1 << 16), *tmp = key_to_str(pr->pKey);
     out = strcpy(out, tmp);
     free(tmp);
     out = strcat(out, " ");
@@ -67,7 +67,7 @@ Protected *str_to_protected(char *str) {
 /**Liberer l'espace occupé par les protégés*/
 void free_protected(Protected *pr) {
     free(pr->mess);
-    free(pr->pKeyey);
+    free(pr->pKey);
     free_signature(pr->sgn);
     free(pr);
 }
