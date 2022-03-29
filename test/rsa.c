@@ -26,5 +26,8 @@ int main() {
     // Dechiffrement
     char *decoded = decrypt(crypted, len, u, n);
     printf("Decoded:%s\n", decoded);
+    // free
+    free(crypted);
+    free(decoded);
     return 0;
 }

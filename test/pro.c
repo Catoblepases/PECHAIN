@@ -49,6 +49,8 @@ void test1() {
     free(sKey);
     free(pKeyC);
     free(sKeyC);
+    free_protected(pr);
+    free_signature(sgn);
 }
 
 int main(void) {

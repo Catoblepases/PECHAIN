@@ -9,6 +9,8 @@ Protected *init_protected(Key *pKey, char *mess, Signature *sgn) {
     Protected *pr = (Protected *) malloc(sizeof(Protected));
     pr->mess      = strdup(mess);
     pr->sgn       = sgn;
+    pr->pKey      = (Key *) malloc(sizeof(Key));
+    init_key(pr->pKey, pKey->n, pKey->val);
     return pr;
 }
 
@@ -20,8 +22,8 @@ int verify(Protected *pr) {
 /**Returns a string of protected, The string must contain in order :
 - the sender's public key,- his message,- his signature, separated by a space */
 char *protected_to_str(Protected *pr) {
-    char *out = strdup("");
-    out       = strcat(out, key_to_str(pr->pKey));
+    char *out = malloc(sizeof(char) * 1 << 16);
+    out       = strcpy(out, key_to_str(pr->pKey));
     out       = strcat(out, " ");
     out       = strcat(out, pr->mess);
     out       = strcat(out, " ");
@@ -40,7 +42,7 @@ Protected *str_to_protected(char *str) {
             separate = 0;
         } else if (str[idx] == ' ') {
             separate     = 1;
-            tmp[pointAt] = malloc(sizeof(char) * (idx - begin + 2));
+            tmp[pointAt] = malloc(sizeof(char) * (idx - begin + 16));
             strncpy(tmp[pointAt], str + begin, idx - begin + 1);
         }
     }
@@ -66,14 +68,14 @@ void generate_random_data(int nv, int nc) {
     // cree un fchier keys.txt contenant tous ces couples de cles (un couple par ligne),
     FILE *fKey = fopen("keys.txt", "w");
     fprintf(fKey, "keyPublic,keySecret\n");
-
     Key  *pk[nv], *sk[nv];
     char *buf;
     for (int i = 0; i < nv; i++) {
-        pk[i] = malloc(sizeof(Key));
-        sk[i] = malloc(sizeof(Key));
-        init_pair_keys(pk[i], sk[i], 3, 7);
+        pk[i] = (Key *) malloc(sizeof(Key));
+        sk[i] = (Key *) malloc(sizeof(Key));
+        init_pair_keys(pk[i], sk[i], 5, 8);
         buf = key_to_str(pk[i]);
+        printf("%d ok : %s", i, buf);
         fprintf(fKey, "%s\n", buf);
         if (buf) free(buf);
     }
@@ -99,9 +101,13 @@ void generate_random_data(int nv, int nc) {
     char      *str;
     for (int i = 0; i < nv; i++) {
         vote = rand() % nc + 1;
-        // printf("%s %d ", vote, strlen(vote));
-        // encr = encrypt(vote, pKey->val, pKey->n);
-        str = key_to_str(pk[vote]);
+        if (pk[vote] != NULL) {
+            // printf("%s %d ", vote, strlen(vote));
+            // encr = encrypt(vote, pKey->val, pKey->n);
+            str = key_to_str(pk[vote]);
+        } else {
+            strcpy(str, "null");
+        }
         pr  = init_protected(pk[i], str, sign(str, sk[i]));
         buf = protected_to_str(pr);
         fprintf(fDecl, "%s\n", buf);

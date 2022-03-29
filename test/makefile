@@ -16,6 +16,7 @@ run: $(TEST_FILES)
 clean :
 	rm -f *.o
 	rm -f *.exe
+	rm -f $(TEST_FILES)
 
 $(TEST_FILES): %: $(D_LIB)/%.o %.c
 	$(CC) $(CFLAGS) -o $@ $@.c $(TEST_FILES:%=$(D_LIB)/%.o)

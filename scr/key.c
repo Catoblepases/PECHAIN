@@ -1,7 +1,9 @@
 #include "key.h"
 #include "rsa.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void init_key(Key *key, long val, long n) {
     key->n   = n;
@@ -19,7 +21,10 @@ void init_pair_keys(Key *pKey, Key *sKey, int low_size, int up_size) {
 }
 
 char *key_to_str(Key *key) {
-    char *out = (char *) malloc(64 * sizeof(char));
+    if (key == NULL) {
+        return strdup("null");
+    }
+    char *out = (char *) malloc(1 << 15 * sizeof(char));
     sprintf(out, "(%ld,%ld)", key->n, key->val);
     return out;
 }
@@ -27,7 +32,8 @@ char *key_to_str(Key *key) {
 Key *str_to_key(char *str) {
     Key *key = (Key *) malloc(sizeof(Key));
     long n, val;
-    sscanf(str, "(%ld,%ld)", &val, &n);
-    init_key(key, val, n);
-    return key;
+    if (sscanf(str, "(%ld,%ld)", &val, &n) >= 2) {
+        return key;
+    }
+    return NULL;
 }
