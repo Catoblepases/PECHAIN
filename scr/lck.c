@@ -62,5 +62,4 @@ void delete_list_key(CellKey *LCK) {
         delete_cell_key(lck);
         lck = tmp;
     }
-    free(LCK);
 }

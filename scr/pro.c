@@ -17,20 +17,41 @@ int verify(Protected *pr) {
     return strcmp(mess, pr->mess);
 }
 
+/**Returns a string of protected, The string must contain in order :
+- the sender's public key,- his message,- his signature, separated by a space */
 char *protected_to_str(Protected *pr) {
-    char *out = "Key: ";
+    char *out = strdup("");
     out       = strcat(out, key_to_str(pr->pKey));
-    out       = strcat(out, "\nmessage: ");
+    out       = strcat(out, " ");
     out       = strcat(out, pr->mess);
-    out       = strcat(out, "\nsignature: ");
+    out       = strcat(out, " ");
     out       = strcat(out, signature_to_str(pr->sgn));
     return out;
 }
 
 Protected *str_to_protected(char *str) {
-    str_to_key(str);
-    str_to_signature(str);
-    return init_protected(NULL, NULL, NULL);
+    // Storing key, message and signatures in sequence
+    char **tmp      = malloc(sizeof(char *) * 3);
+    int    separate = 1;
+    int    begin, idx = -1, pointAt = 0;
+    while (str[++idx] != '\0') {
+        if (separate) {
+            begin    = idx;
+            separate = 0;
+        } else if (str[idx] == ' ') {
+            separate     = 1;
+            tmp[pointAt] = malloc(sizeof(char) * (idx - begin + 2));
+            strncpy(tmp[pointAt], str + begin, idx - begin + 1);
+        }
+    }
+    Key       *key = str_to_key(tmp[0]);
+    Signature *sgn = str_to_signature(tmp[1]);
+    Protected *pr  = init_protected(key, tmp[2], sgn);
+    for (int i = 0; i < 3; i++) {
+        free(tmp[i]);
+    }
+    free(tmp);
+    return pr;
 }
 
 void generate_random_data(int nv, int nc) {
@@ -39,7 +60,7 @@ void generate_random_data(int nv, int nc) {
     FILE *fKey = fopen("keys.txt", "w");
     fprintf(fKey, "keyPublic,keySecret\n");
 
-    Key * pk[nv], *sk[nv];
+    Key  *pk[nv], *sk[nv];
     char *kkey;
     for (int i = 0; i < nv; i++) {
         pk[i] = malloc(sizeof(Key));
@@ -62,11 +83,11 @@ void generate_random_data(int nv, int nc) {
     // aleatoirement),
     // cree un fchier declarations.txt contenant toutes les declarations signees (une
     // declaration par ligne)
-    FILE *     fDecl = fopen("declarations.txt", "w");
+    FILE      *fDecl = fopen("declarations.txt", "w");
     Signature *tmp;
     char       vote[1 << 8];
 
-    int64 *mm;
+    int64 *encr;
 
     for (int i = 0; i < nv; i++) {
         sprintf(vote, "00%d", rand() % nc + 1);
@@ -75,9 +96,9 @@ void generate_random_data(int nv, int nc) {
         Key *pKey = malloc(sizeof(Key));
         Key *sKey = malloc(sizeof(Key));
         init_pair_keys(pKey, sKey, 3, 7);
-        mm = encrypt(vote, pKey->val, pKey->n);
-        // mm = encrypt(vote, sk[i]->val, sk[i]->n);
-        // print_long_vector(mm, strlen(vote));
+        encr = encrypt(vote, pKey->val, pKey->n);
+        // encr = encrypt(vote, sk[i]->val, sk[i]->n);
+        // print_long_vector(encr, strlen(vote));
 
         tmp = sign(vote, sKey);
         fprintf(fDecl, "%s\n", signature_to_str(tmp));

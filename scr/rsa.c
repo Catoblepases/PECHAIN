@@ -6,7 +6,6 @@
 #include <string.h>
 #include <time.h>
 
-
 int64 extended_gcd(int64 s, int64 t, int64 *u, int64 *v) {
     if (t == 0) {
         *u = 1;
@@ -49,10 +48,8 @@ int64 *encrypt(char *chaine, int64 s, int64 n) {
 char *decrypt(int64 *crypted, int size, int64 u, int64 n) {
     char *d = (char *) malloc(sizeof(char) * (size + 1));
     d[size] = '\0';
-    int64 tmp;
     for (int i = 0; i < size; i++) {
-        tmp  = modpow(crypted[i], u, n);
-        d[i] = tmp;
+        d[i] = modpow(crypted[i], u, n);
         // printf("(%d-%lld) ", d[i], tmp);
     }
     return d;

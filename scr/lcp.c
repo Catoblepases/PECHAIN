@@ -58,3 +58,18 @@ void delete_list_protected(CellProtected *LCP) {
     }
     free(LCP);
 }
+
+void verifyForList(CellProtected **LCP) {
+    CellProtected *lcp = *LCP, *tmp;
+    if (!verify(lcp->data)) {
+        *LCP = (*LCP)->next;
+    }
+    while (lcp->next != NULL) {
+        if (!verify(lcp->next->data)) {
+            tmp       = lcp->next;
+            lcp->next = lcp->next->next;
+            delete_cell_protected(tmp);
+        }
+        lcp = lcp->next;
+    }
+}

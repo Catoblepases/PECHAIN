@@ -1,17 +1,16 @@
-CFLAGS=-Wall
-EXE_OUTPUT=$(D_ROOT)/build/tests
+CFLAGS=-g -Wall
 TEST_FILES = rsa pro libp sgn key lck lcp
 
 all:
 
 run: $(TEST_FILES)
-	for ftest in $(TEST_FILES); do \
+	for test in $(TEST_FILES); do \
 		echo  ;\
-		echo ==============================================; \
-		echo :: running "$$ftest" tests; \
-		echo ==============================================; \
+		echo ------------------------------------------------; \
+		echo test: "$$test"; \
+		echo ------------------------------------------------; \
 		echo  ;\
-		./$$ftest; \
+		./$$test; \
 	done
 
 clean :

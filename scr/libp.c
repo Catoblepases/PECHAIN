@@ -11,7 +11,7 @@ int is_prime_naive(int64 p) {
     return 1;
 }
 
-int modpow_naive(int64 a, int64 m, int64 n) {
+int64 modpow_naive(int64 a, int64 m, int64 n) {
     int res = 1;
     for (int i = 0; i < m; i++) {
         res *= a;
@@ -20,7 +20,7 @@ int modpow_naive(int64 a, int64 m, int64 n) {
     return res;
 }
 
-int modpow(int64 a, int64 m, int64 n) {
+int64 modpow(int64 a, int64 m, int64 n) {
     a = a % n;
     if (m == 0) return 1;
     if (m == 1) return a;

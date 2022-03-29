@@ -3,15 +3,14 @@
 
 #include "key.h"
 
-typedef long long int int64;
 typedef struct signature {
-    int    size;
-    int64 *content;
+    int   size;
+    long *content;
 } Signature;
 
-Signature *init_signature(int64 *content, int size);
+Signature *init_signature(long *content, int size);
 Signature *sign(char *mess, Key *sKey);
-char *     signature_to_str(Signature *sgn);
+char      *signature_to_str(Signature *sgn);
 Signature *str_to_signature(char *str);
 
 #endif
