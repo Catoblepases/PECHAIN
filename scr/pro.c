@@ -10,54 +10,50 @@ Protected *init_protected(Key *pKey, char *mess, Signature *sgn) {
     pr->mess      = strdup(mess);
     pr->sgn       = sgn;
     pr->pKey      = (Key *) malloc(sizeof(Key));
-    init_key(pr->pKey, pKey->n, pKey->val);
+    init_key(pr->pKey, pKey->val, pKey->n);
     return pr;
 }
 
 int verify(Protected *pr) {
     char *mess = decrypt(pr->sgn->content, pr->sgn->size, pr->pKey->val, pr->pKey->n);
-    return strcmp(mess, pr->mess);
+    int   out  = strcmp(mess, pr->mess);
+    free(mess);
+    if (out == 0) return 1;
+    return 0;
 }
 
 /**Returns a string of protected, The string must contain in order :
 - the sender's public key,- his message,- his signature, separated by a space */
 char *protected_to_str(Protected *pr) {
-    char *out = malloc(sizeof(char) * 1 << 16);
-    out       = strcpy(out, key_to_str(pr->pKey));
-    out       = strcat(out, " ");
-    out       = strcat(out, pr->mess);
-    out       = strcat(out, " ");
-    out       = strcat(out, signature_to_str(pr->sgn));
+    char *out = malloc(sizeof(char) * 1 << 16), *tmp = key_to_str(pr->pKey);
+    out = strcpy(out, tmp);
+    free(tmp);
+    out = strcat(out, " ");
+    out = strcat(out, pr->mess);
+    out = strcat(out, " ");
+    tmp = signature_to_str(pr->sgn);
+    out = strcat(out, tmp);
+    free(tmp);
     return out;
 }
 
 Protected *str_to_protected(char *str) {
     // tmp storing key, message and signatures in sequence
     char *tmp[3];
-    int   separate = 1;
-    int   begin, pointAt = 0;
-    for (int idx = 0; idx < strlen(str); idx++) {
-        if (separate) {
-            begin    = idx;
-            separate = 0;
-        } else if ((str[idx] == ' ') || (idx == strlen(str) - 1)) {
-            separate     = 1;
-            tmp[pointAt] = malloc(sizeof(char) * (idx - begin + 2));
-            printf("\n%d: %s(%d)\n", idx, str + begin, idx - begin);
-            strncpy(tmp[pointAt], str + begin, idx - begin);
-            pointAt++;
-        }
+    int   idx    = 0;
+    char *result = strtok(str, " ");
+    while (result != NULL) {
+        tmp[idx++] = result;
+        result     = strtok(NULL, " ");
     }
-    printf("reading result: %s %s %s\n", tmp[0], tmp[1], tmp[2]);
+    // printf("reading result: %s %s %s\n", tmp[0], tmp[1], tmp[2]);
     // construct
     Key       *key = str_to_key(tmp[0]);
-    Signature *sgn = str_to_signature(tmp[1]);
-    Protected *pr  = init_protected(key, tmp[2], sgn);
+    Signature *sgn = str_to_signature(tmp[2]);
+    // printf("constructiong result: %s %s %s\n", key_to_str(key), tmp[1], signature_to_str(sgn));
+    Protected *pr = init_protected(key, tmp[1], sgn);
     // free
     free(key);
-    for (int i = 0; i < 3; i++) {
-        free(tmp[i]);
-    }
     return pr;
 }
 
