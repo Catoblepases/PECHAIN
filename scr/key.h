@@ -1,7 +1,7 @@
 
 
-#ifndef __KEY
-#define __KEY
+#ifndef __KEY__
+#define __KEY__
 typedef struct _Key {
     long val;
     long n;

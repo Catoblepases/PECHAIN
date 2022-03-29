@@ -1,8 +1,11 @@
 #include "libp.h"
 #include "sgn.h"
 
-#ifndef __PROTECTION
-#define __PROTECTION
+#ifndef __PROTECTION__
+#define __PROTECTION__
+
+/**contient la cle publique de l'emetteur (l'electeur), son
+message (sa declaration de vote), et la signature associee */
 typedef struct _Protected {
     Key       *pKey;
     Signature *sgn;

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**alloue et initialise structure Signature*/
 Signature *init_signature(long *content, int size) {
     Signature *sgn = (Signature *) malloc(sizeof(Signature));
     sgn->content   = content;
@@ -11,11 +12,13 @@ Signature *init_signature(long *content, int size) {
     return sgn;
 }
 
+/**Encoder le message selon la clé secrète et générer une signature*/
 Signature *sign(char *mess, Key *sKey) {
     long *ency = encrypt(mess, sKey->val, sKey->n);
     return init_signature(ency, strlen(mess));
 }
 
+/**permettent de passer d’un Signature a sa representation sous forme de chaıne de caracteres.*/
 char *signature_to_str(Signature *sgn) {
     char *result = malloc(10 * sgn->size * sizeof(char));
     result[0]    = '#';
@@ -35,6 +38,7 @@ char *signature_to_str(Signature *sgn) {
     return result;
 }
 
+/**permettent de passer d’un chaıne de caracteres a structure Signature*/
 Signature *str_to_signature(char *str) {
     int   len     = strlen(str);
     long *content = (long *) malloc(sizeof(long) * len);
@@ -58,6 +62,7 @@ Signature *str_to_signature(char *str) {
     return init_signature(content, num);
 }
 
+/**Liberer l'espace occupé par signature*/
 void free_signature(Signature *sgn) {
     free(sgn->content);
     free(sgn);

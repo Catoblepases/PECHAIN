@@ -1,5 +1,5 @@
-#ifndef __LSP
-#define __LSP
+#ifndef __LSP__
+#define __LSP__
 #include "pro.h"
 
 typedef struct cellProtected {

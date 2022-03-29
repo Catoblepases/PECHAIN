@@ -1,31 +1,37 @@
 #include "pro.h"
 #include "rsa.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-Protected *init_protected(Key *pKey, char *mess, Signature *sgn) {
+/**alloue et initialise structure protected
+ * (cette fonbCandidatetion ne verife pas si la signature est valide)*/
+Protected *init_protected(Key *pKeyey, char *mess, Signature *sgn) {
     Protected *pr = (Protected *) malloc(sizeof(Protected));
     pr->mess      = strdup(mess);
     pr->sgn       = sgn;
-    pr->pKey      = (Key *) malloc(sizeof(Key));
-    init_key(pr->pKey, pKey->val, pKey->n);
+    pr->pKeyey    = (Key *) malloc(sizeof(Key));
+    init_key(pr->pKeyey, pKeyey->val, pKeyey->n);
     return pr;
 }
 
+/**verife que la signature contenue dans
+ * pr correspond bien au message et a la personne contenus dans pr.*/
 int verify(Protected *pr) {
-    char *mess = decrypt(pr->sgn->content, pr->sgn->size, pr->pKey->val, pr->pKey->n);
+    char *mess = decrypt(pr->sgn->content, pr->sgn->size, pr->pKeyey->val, pr->pKeyey->n);
     int   out  = strcmp(mess, pr->mess);
     free(mess);
     if (out == 0) return 1;
     return 0;
 }
 
-/**Returns a string of protected, The string must contain in order :
-- the sender's public key,- his message,- his signature, separated by a space */
+/**permettent de passer d’un Protected a sa representation sous forme de chaıne de caracteres.
+ * Retourne une chaîne de caractères protégée, La chaîne doit contenir dans l'ordre:
+ * - la clé publique de l'expéditeur,- son message,- sa signature, séparés par un espace */
 char *protected_to_str(Protected *pr) {
-    char *out = malloc(sizeof(char) * 1 << 16), *tmp = key_to_str(pr->pKey);
+    char *out = malloc(sizeof(char) * 1 << 16), *tmp = key_to_str(pr->pKeyey);
     out = strcpy(out, tmp);
     free(tmp);
     out = strcat(out, " ");
@@ -36,9 +42,9 @@ char *protected_to_str(Protected *pr) {
     free(tmp);
     return out;
 }
-
+/**permettent de passer d’un chaıne de caracteres a structure Protected*/
 Protected *str_to_protected(char *str) {
-    // tmp storing key, message and signatures in sequence
+    // tmp stocke la clé, le message et les signatures en séquenbCandidatee
     char *tmp[3];
     int   idx    = 0;
     char *result = strtok(str, " ");
@@ -47,14 +53,10 @@ Protected *str_to_protected(char *str) {
         tmp[idx++] = result;
         result     = strtok(NULL, " ");
     }
-    if (idx != 3) {
-        return NULL;
-    }
-    // printf("reading result: %s %s %s\n", tmp[0], tmp[1], tmp[2]);
+    if (idx != 3) return NULL;
     // construct
     Key       *key = str_to_key(tmp[0]);
     Signature *sgn = str_to_signature(tmp[2]);
-    // printf("constructiong result: %s %s %s\n", key_to_str(key), tmp[1], signature_to_str(sgn));
     if ((!key) || (!sgn) || (!tmp[1])) return NULL;
     Protected *pr = init_protected(key, tmp[1], sgn);
     // free
@@ -62,59 +64,78 @@ Protected *str_to_protected(char *str) {
     return pr;
 }
 
+/**Liberer l'espace occupé par les protégés*/
 void free_protected(Protected *pr) {
     free(pr->mess);
-    free(pr->pKey);
+    free(pr->pKeyey);
     free_signature(pr->sgn);
     free(pr);
 }
 
-void generate_random_data(int nv, int nc) {
-    // genere nv couples de cles (publique, secrete) diﬀerents representant les nv citoyens,
-    // cree un fchier keys.txt contenant tous ces couples de cles (un couple par ligne),
+/**Creation de donnees pour simuler le processus de vote:
+ *
+ * 1. Générer une carte "élection" pour chaque citoyen, comprenant ses clés publiques et secrètes,
+ * et identifier toutes les clés publiques sur ces cartes.
+ * 2. Afin de mettre en œuvre le vote, il est d'abord nécessaire de générer une carte électorale
+ * unique pour chaque citoyen, comprenant ses clés publiques et secrètes, et d'identifier toutes
+ * les clés publiques sur ces cartes.
+ * 3. Pour garantir l'anonymat du vote, le système de vote collecte les données de l'électeur et
+ * les enbCitoyenoie au bureau de vote.
+ *
+ * Nous utilisons trois fichiers pour simuler ce processus de vote :
+ * un fichier contenant les clés de tous les citoyens,
+ * un fichier indiquant les candidats et
+ * un fichier contenant lesdéclarations de signature.
+ *
+ * Cette fonbCandidatetion génère des données aléatoires pour remplir les trois fichiers en
+ * fonbCandidatetion du nombre de résidents et du nombre de candidats.
+ */
+void generate_random_data(int nbCitoyen, int nbCandidate) {
+    // genere nbCitoyen couples de cles (publique, secrete) diﬀerents representant les nbCitoyen
+    // citoyens, cree un fchier keys.txt contenant tous ces couples de cles (un couple par ligne),
     FILE *fKey = fopen("keys.txt", "w");
     fprintf(fKey, "keyPublic,keySecret\n");
-    Key  *pk[nv], *sk[nv];
+    Key  *pKey[nbCitoyen], *sKey[nbCitoyen];
     char *buf;
-    for (int i = 0; i < nv; i++) {
-        pk[i] = (Key *) malloc(sizeof(Key));
-        sk[i] = (Key *) malloc(sizeof(Key));
-        init_pair_keys(pk[i], sk[i], 5, 8);
-        buf = key_to_str(pk[i]);
+    for (int i = 0; i < nbCitoyen; i++) {
+        pKey[i] = (Key *) malloc(sizeof(Key));
+        sKey[i] = (Key *) malloc(sizeof(Key));
+        init_pair_keys(pKey[i], sKey[i], 5, 8);
+        buf = key_to_str(pKey[i]);
         printf("%d ok : %s", i, buf);
         fprintf(fKey, "%s\n", buf);
         if (buf) free(buf);
     }
-    // selectionne nc cles publiques aleatoirement pour defnir les nc candidats,
+    // selectionne nbCandidate cles publiques aleatoirement pour defnir les nbCandidate candidats,
     // cree un fchier candidates.txt contenant la cle publique de tous les candidats (une cle
     // publique par ligne),
     FILE *fCandidate = fopen("candidates.txt", "w");
     srand(time(NULL));
-    int candidate[nc];
-    for (int i = 0; i < nc; i++) {
-        candidate[i] = rand() % nv;
-        buf          = key_to_str(pk[candidate[i]]);
+    int candidate[nbCandidate];
+    for (int i = 0; i < nbCandidate; i++) {
+        candidate[i] = rand() % nbCitoyen;
+        buf          = key_to_str(pKey[candidate[i]]);
         fprintf(fCandidate, "%d, %s\n", i + 1, buf);
         if (buf) free(buf);
     }
-    // genere une declaration de vote signee pour chaque citoyen (candidat choisi
-    // aleatoirement),
-    // cree un fchier declarations.txt contenant toutes les declarations signees (une
-    // declaration par ligne)
+    // genere une declaration de vote signee pour chaque citoyen
+    // (candidat choisi aleatoirement),
+
+    // cree un fchier declarations.txt contenant toutes les declarations signees
+    // (une declaration par ligne)
     FILE      *fDecl = fopen("declarations.txt", "w");
     Protected *pr;
     int        vote;
     char      *str;
-    for (int i = 0; i < nv; i++) {
-        vote = rand() % nc + 1;
-        if (pk[vote] != NULL) {
-            // printf("%s %d ", vote, strlen(vote));
-            // encr = encrypt(vote, pKey->val, pKey->n);
-            str = key_to_str(pk[vote]);
-        } else {
-            strcpy(str, "null");
-        }
-        pr  = init_protected(pk[i], str, sign(str, sk[i]));
+
+    for (int i = 0; i < nbCitoyen; i++) {
+        // Générer aléatoirement le numéro du candidat choisi par le citoyen.
+        vote = rand() % nbCandidate;
+        assert(pKey[candidate[vote]]);
+        // Génération de déclarations sur la base des numéros de candidats et des numéros de citoyens
+        str = key_to_str(pKey[candidate[vote]]);
+        // L'information est la clé publique des candidats
+        pr  = init_protected(pKey[candidate[vote]], str, sign(str, sKey[i]));
         buf = protected_to_str(pr);
         fprintf(fDecl, "%s\n", buf);
         if (str) free(str);
@@ -122,11 +143,10 @@ void generate_random_data(int nv, int nc) {
         if (buf) free(buf);
     }
 
-    for (int i = 0; i < nv; i++) {
-        free(sk[i]);
-        free(pk[i]);
+    for (int i = 0; i < nbCitoyen; i++) {
+        free(sKey[i]);
+        free(pKey[i]);
     }
-
     fclose(fDecl);
     fclose(fCandidate);
     fclose(fKey);

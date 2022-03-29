@@ -1,5 +1,5 @@
-#ifndef __LCK
-#define __LCK
+#ifndef __LCK__
+#define __LCK__
 #include "key.h"
 
 typedef struct cellKey {
