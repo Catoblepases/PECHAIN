@@ -2,6 +2,8 @@
 
 #ifndef __KEY__
 #define __KEY__
+
+/* une structure Key qui contient deux long représentant une clé (publique ou secrète).*/
 typedef struct _Key {
     long val;
     long n;

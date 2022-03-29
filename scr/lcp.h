@@ -2,6 +2,7 @@
 #define __LSP__
 #include "pro.h"
 
+/*Une cellule d'une liste chaînée de déclarations signées CellProtected qui contient une déclaration signée et la suivant.*/
 typedef struct cellProtected {
     Protected            *data;
     struct cellProtected *next;

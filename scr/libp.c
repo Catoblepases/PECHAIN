@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+/*Renvoie 1 si p est premier et 0 sinon.*/
 int is_prime_naive(long p) {
     /**/
     for (int i = 2; i < p / 2; i++) {
@@ -12,6 +13,7 @@ int is_prime_naive(long p) {
     return 1;
 }
 
+/*Retourne la valeur a^m mod n par la méthode naïve.*/
 long modpow_naive(long a, long m, long n) {
     int res = 1;
     for (int i = 0; i < m; i++) {
@@ -21,6 +23,7 @@ long modpow_naive(long a, long m, long n) {
     return res;
 }
 
+/*Retourne la valeur a^m mod n par des élévations au carré.*/
 long modpow(long a, long m, long n) {
     a = a % n;
     if (m == 0) return 1;
@@ -33,6 +36,7 @@ long modpow(long a, long m, long n) {
     }
 }
 
+/*Teste si a est un témoin de Miller pour p, pour un entier a donné.*/
 int witness(long a, long b, long d, long p) {
     long x = modpow(a, d, p);
     if (x == 1) {
@@ -47,8 +51,11 @@ int witness(long a, long b, long d, long p) {
     return 1;
 }
 
+/*Retourne un entier long générant aléatoirement entre low et up inclus.*/
 long rand_long(long low, long up) { return rand() % (up - low + 1) + low; }
 
+/**Réalise le test de Miller-Rabin en générant k valeurs de a au hasard, et en testant si chaque valeur de a est un témoin de Miller pour p. 
+*La fonction retourne 0 dès qu’un témoin de Miller est trouvé (p n’est pas premier), et retourne 1 si aucun témoin de Miller n’a été trouvé (p est très probablement premier).*/
 int is_prime_miller(long p, int k) {
     if (p == 2) {
         return 1;
@@ -73,6 +80,9 @@ int is_prime_miller(long p, int k) {
     return 1;
 }
 
+/*Retourne un nombre premier de taille comprise entre low size et up size.
+— deux entiers low_size et up_size représentant respectivement la taille minimale et maximale du nombre premier à générer.
+— et un entier k représentant le nombre de tests de Miller à réaliser.*/
 long random_prime_number(int low_size, int up_size, int k) {
     if (up_size > 32) {
         up_size = 32;

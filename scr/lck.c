@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* Alloue et initialise une cellule de liste chaînée.*/
 CellKey *create_cell_key(Key *key) {
     CellKey *LCK = (CellKey *) malloc(sizeof(CellKey));
     if (LCK == NULL) {
@@ -14,12 +15,14 @@ CellKey *create_cell_key(Key *key) {
     }
 }
 
+/*Ajoute une clé en tête de liste.*/
 void add_head(CellKey **LCK, Key *key) {
     CellKey *new = create_cell_key(key);
     new->next    = *LCK;
     *LCK         = new;
 }
 
+/*Prend en entrée le fichier keys.txt ou le fichier candidates.txt, et retourne une liste chaînée contenant toutes les clés publiques du fichier.*/
 CellKey *read_public_keys(char *fileName) {
     FILE    *f = fopen(fileName, "r");
     char     buf[1 << 12];
@@ -37,6 +40,7 @@ CellKey *read_public_keys(char *fileName) {
     return LCK;
 }
 
+/*Affiche une liste chaînée de clés.*/
 void print_list_keys(CellKey *LCK) {
     char *buf;
     // printf("print_list_keys\n");
@@ -52,6 +56,7 @@ void print_list_keys(CellKey *LCK) {
     }
 }
 
+/* Supprime une cellule de liste chaînée de clés.*/
 void delete_cell_key(CellKey *LCK) {
     if (LCK != NULL) {
         free(LCK->data);
@@ -59,6 +64,7 @@ void delete_cell_key(CellKey *LCK) {
     }
 }
 
+/*Supprime une liste chaînée de clés.*/
 void delete_list_key(CellKey *LCK) {
     if (LCK == NULL) return;
     CellKey *tmp, *lck = LCK;

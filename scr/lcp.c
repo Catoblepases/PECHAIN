@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*Alloue et initialise une cellule de liste chaînée de déclarations signées.*/ 
 CellProtected *create_cell_protected(Protected *pr) {
     assert(pr);
     CellProtected *LCP = (CellProtected *) malloc(sizeof(CellProtected));
@@ -11,6 +12,7 @@ CellProtected *create_cell_protected(Protected *pr) {
     return LCP;
 }
 
+/*Ajoute une déclaration signée en tête de liste.*/
 void add_head_LCP(CellProtected **LCP, Protected *pr) {
     assert(pr);
     CellProtected *new = create_cell_protected(pr);
@@ -18,6 +20,7 @@ void add_head_LCP(CellProtected **LCP, Protected *pr) {
     *LCP               = new;
 }
 
+/*Lit le fichier declarations.txt, et crée une liste contenant toutes les déclarations signées du fichier.*/
 CellProtected *read_protected(char *fileName) {
     FILE          *f = fopen(fileName, "r");
     char           buf[1 << 12];
@@ -36,6 +39,7 @@ CellProtected *read_protected(char *fileName) {
     return LCP;
 }
 
+/*Affiche une liste chaînée de déclarations signées.*/
 void print_list_protected(CellProtected *LCP) {
     char *buf;
     while (LCP != NULL) {
@@ -47,6 +51,7 @@ void print_list_protected(CellProtected *LCP) {
     }
 }
 
+/*Supprime une cellule de liste chaînée de déclarations sigées.*/
 void delete_cell_protected(CellProtected *c) {
     if (c != NULL) {
         free_protected(c->data);
@@ -54,6 +59,7 @@ void delete_cell_protected(CellProtected *c) {
     }
 }
 
+/*Supprime une liste chaînée de déclarations signées.*/
 void delete_list_protected(CellProtected *LCP) {
     CellProtected *tmp = LCP;
     while (LCP != NULL) {
@@ -63,10 +69,11 @@ void delete_list_protected(CellProtected *LCP) {
     }
 }
 
-// Returns the number of error signatures and removes all incorrect objects
+/*Renvoie le nombre de signatures invalides et les supprime.*/
 int verifyForList(CellProtected **LCP) {
     CellProtected *lcp = *LCP, *tmp;
     int            nb  = 0;
+    //Vérifie la validité de la première déclaration signée.*/
     if (!verify(lcp->data)) {
         lcp  = lcp->next;
         tmp  = *LCP;
@@ -76,6 +83,7 @@ int verifyForList(CellProtected **LCP) {
     }
     while (lcp->next) {
         assert(lcp->next->data);
+        //Vérifie la validité de la prochaine déclaration signée.
         if (!verify(lcp->next->data)) {
             tmp       = lcp->next;
             lcp->next = lcp->next->next;

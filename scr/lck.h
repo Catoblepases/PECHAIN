@@ -2,6 +2,7 @@
 #define __LCK__
 #include "key.h"
 
+/*Une cellule de la liste chaînée de clés CellKey qui contient une clé et la suivant.*/
 typedef struct cellKey {
     Key            *data;
     struct cellKey *next;
