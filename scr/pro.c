@@ -8,7 +8,7 @@
 Protected *init_protected(Key *pKey, char *mess, Signature *sgn) {
     Protected *pr = (Protected *) malloc(sizeof(Protected));
     pr->mess      = strdup(mess);
-    pr->sgn       = init_signature(sgn->content, sgn->size);
+    pr->sgn       = sgn;
     return pr;
 }
 
@@ -54,6 +54,13 @@ Protected *str_to_protected(char *str) {
     return pr;
 }
 
+void free_protected(Protected *pr) {
+    free(pr->mess);
+    free(pr->pKey);
+    free_signature(pr->sgn);
+    free(pr);
+}
+
 void generate_random_data(int nv, int nc) {
     // genere nv couples de cles (publique, secrete) diﬀerents representant les nv citoyens,
     // cree un fchier keys.txt contenant tous ces couples de cles (un couple par ligne),
@@ -61,13 +68,14 @@ void generate_random_data(int nv, int nc) {
     fprintf(fKey, "keyPublic,keySecret\n");
 
     Key  *pk[nv], *sk[nv];
-    char *kkey;
+    char *buf;
     for (int i = 0; i < nv; i++) {
         pk[i] = malloc(sizeof(Key));
         sk[i] = malloc(sizeof(Key));
         init_pair_keys(pk[i], sk[i], 3, 7);
-        kkey = key_to_str(pk[i]);
-        fprintf(fKey, "%s\n", kkey);
+        buf = key_to_str(pk[i]);
+        fprintf(fKey, "%s\n", buf);
+        if (buf) free(buf);
     }
     // selectionne nc cles publiques aleatoirement pour defnir les nc candidats,
     // cree un fchier candidates.txt contenant la cle publique de tous les candidats (une cle
@@ -77,37 +85,36 @@ void generate_random_data(int nv, int nc) {
     int candidate[nc];
     for (int i = 0; i < nc; i++) {
         candidate[i] = rand() % nv;
-        fprintf(fCandidate, "%d, %s\n", i + 1, key_to_str(pk[candidate[i]]));
+        buf          = key_to_str(pk[candidate[i]]);
+        fprintf(fCandidate, "%d, %s\n", i + 1, buf);
+        if (buf) free(buf);
     }
     // genere une declaration de vote signee pour chaque citoyen (candidat choisi
     // aleatoirement),
     // cree un fchier declarations.txt contenant toutes les declarations signees (une
     // declaration par ligne)
     FILE      *fDecl = fopen("declarations.txt", "w");
-    Signature *tmp;
-    char       vote[1 << 8];
-
-    int64 *encr;
-
+    Protected *pr;
+    int        vote;
+    char      *str;
     for (int i = 0; i < nv; i++) {
-        sprintf(vote, "00%d", rand() % nc + 1);
+        vote = rand() % nc + 1;
         // printf("%s %d ", vote, strlen(vote));
-
-        Key *pKey = malloc(sizeof(Key));
-        Key *sKey = malloc(sizeof(Key));
-        init_pair_keys(pKey, sKey, 3, 7);
-        encr = encrypt(vote, pKey->val, pKey->n);
-        // encr = encrypt(vote, sk[i]->val, sk[i]->n);
-        // print_long_vector(encr, strlen(vote));
-
-        tmp = sign(vote, sKey);
-        fprintf(fDecl, "%s\n", signature_to_str(tmp));
+        // encr = encrypt(vote, pKey->val, pKey->n);
+        str = key_to_str(pk[vote]);
+        pr  = init_protected(pk[i], str, sign(str, sk[i]));
+        buf = protected_to_str(pr);
+        fprintf(fDecl, "%s\n", buf);
+        if (str) free(str);
+        if (pr) free_protected(pr);
+        if (buf) free(buf);
     }
 
     for (int i = 0; i < nv; i++) {
         free(sk[i]);
         free(pk[i]);
     }
+
     fclose(fDecl);
     fclose(fCandidate);
     fclose(fKey);

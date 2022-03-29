@@ -44,7 +44,7 @@ void print_list_protected(CellProtected *LCP) {
 
 void delete_cell_protected(CellProtected *c) {
     if (c != NULL) {
-        free(c->data);
+        free_protected(c->data);
         free(c);
     }
 }

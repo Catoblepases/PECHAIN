@@ -6,22 +6,22 @@
 #include <string.h>
 #include <time.h>
 
-int64 extended_gcd(int64 s, int64 t, int64 *u, int64 *v) {
+long extended_gcd(long s, long t, long *u, long *v) {
     if (t == 0) {
         *u = 1;
         *v = 0;
         return s;
     }
-    int64 uPrim, vPrim;
-    int64 gcd = extended_gcd(t, s % t, &uPrim, &vPrim);
-    *u        = vPrim;
-    *v        = uPrim - (s / t) * vPrim;
+    long uPrim, vPrim;
+    long gcd = extended_gcd(t, s % t, &uPrim, &vPrim);
+    *u       = vPrim;
+    *v       = uPrim - (s / t) * vPrim;
     return gcd;
 }
 
-void generate_key_values(int64 p, int64 q, int64 *n, int64 *s, int64 *u) {
+void generate_key_values(long p, long q, long *n, long *s, long *u) {
     *n = p * q;
-    int64 S, T = (p - 1) * (q - 1), U, V, num = 0;
+    long S, T = (p - 1) * (q - 1), U, V, num = 0;
     srand(0);
     S = rand_long(0, T);
     while ((extended_gcd(S, T, &U, &V) != 1)) {
@@ -35,9 +35,9 @@ void generate_key_values(int64 p, int64 q, int64 *n, int64 *s, int64 *u) {
     *u = U;
 }
 
-int64 *encrypt(char *chaine, int64 s, int64 n) {
-    int    i = -1, m;
-    int64 *l = malloc(sizeof(int64) * strlen(chaine));
+long *encrypt(char *chaine, long s, long n) {
+    int   i = -1, m;
+    long *l = malloc(sizeof(long) * strlen(chaine));
     while (chaine[++i] != '\0') {
         m    = chaine[i];
         l[i] = modpow(m, s, n);
@@ -45,20 +45,20 @@ int64 *encrypt(char *chaine, int64 s, int64 n) {
     return l;
 }
 
-char *decrypt(int64 *crypted, int size, int64 u, int64 n) {
+char *decrypt(long *crypted, int size, long u, long n) {
     char *d = (char *) malloc(sizeof(char) * (size + 1));
     d[size] = '\0';
     for (int i = 0; i < size; i++) {
         d[i] = modpow(crypted[i], u, n);
-        // printf("(%d-%lld) ", d[i], tmp);
+        // printf("(%d-%ld) ", d[i], tmp);
     }
     return d;
 }
 
-void print_long_vector(int64 *result, int size) {
+void print_long_vector(long *result, int size) {
     printf("Vector:…[");
     for (int i = 0; i < size; i++) {
-        printf("%lld-\t", result[i]);
+        printf("%ld-\t", result[i]);
     }
     printf("]\n");
 }

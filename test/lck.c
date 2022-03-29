@@ -21,7 +21,7 @@ int test_file() {
 
 int main(int argc, char const *argv[]) {
     CellKey *LCK = read_public_keys(FILENAME);
-    print_list_keys(LCK);
+    // print_list_keys(LCK);
     delete_list_key(LCK);
     return 0;
 }

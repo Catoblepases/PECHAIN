@@ -2,20 +2,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <time.h>
 void test1() {
     srand(time(NULL));
     // Testing Init Keys
     Key *pKey = malloc(sizeof(Key));
     Key *sKey = malloc(sizeof(Key));
     init_pair_keys(pKey, sKey, 3, 7);
-    printf("pKey:%x,%lx\n", pKey->val, pKey->n);
-    printf("sKey:-%1x,-%lx-\n", sKey->val, sKey->n);
+    printf("pKey:%lx,%lx\n", pKey->val, pKey->n);
+    printf("sKey:-%lx,-%lx-\n", sKey->val, sKey->n);
     // Testing Key Serialization
     char *chaine = key_to_str(pKey);
     printf("key_to_str:.%s.\n", chaine);
     Key *k = str_to_key(chaine);
-    printf("str-to-key:-%lx,-%1x-\n", k->val, k->n);
+    printf("str-to-key:-%lx,-%lx-\n", k->val, k->n);
     // Testing signature
     // Candidate keys:
     Key *pKeyC = malloc(sizeof(Key));
@@ -50,9 +50,10 @@ void test1() {
     free(pKeyC);
     free(sKeyC);
 }
+
 int main(void) {
-    // test1();
+    test1();
     // Creation de donnees pour simuler le processus de vote
-    generate_random_data(100, 10);
+    // generate_random_data(100, 10);
     return 0;
 }
