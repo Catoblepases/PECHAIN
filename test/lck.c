@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #define FILENAME "keys.txt"
 
+/**Tester si le fichier existe et compter le nombre de lignes valides*/
 int test_file() {
     FILE *f = fopen(FILENAME, "r");
     if (f == NULL) {

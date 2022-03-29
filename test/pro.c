@@ -1,8 +1,10 @@
 #include "scr/pro.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
 void test1() {
     srand(time(NULL));
     // Testing Init Keys
@@ -53,6 +55,7 @@ void test1() {
     chaine          = key_to_str(pr->pKey);
     char *chaineSgn = signature_to_str(pr->sgn);
     printf("str-to-protected:.%s.%s.%s\n", chaine, pr->mess, chaineSgn);
+    // Vérifiez que la structure écrite est la même que la variable originale.
     printf("verify: %d\n", verify(pr));
     free(chaine);
     free(chaineSgn);
