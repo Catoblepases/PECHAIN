@@ -1,8 +1,10 @@
 #include "lcp.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 CellProtected *create_cell_protected(Protected *pr) {
+    assert(pr);
     CellProtected *LCP = (CellProtected *) malloc(sizeof(CellProtected));
     LCP->data          = pr;
     LCP->next          = NULL;
@@ -10,6 +12,7 @@ CellProtected *create_cell_protected(Protected *pr) {
 }
 
 void add_head_LCP(CellProtected **LCP, Protected *pr) {
+    assert(pr);
     CellProtected *new = create_cell_protected(pr);
     new->next          = *LCP;
     *LCP               = new;
@@ -36,6 +39,7 @@ CellProtected *read_protected(char *fileName) {
 void print_list_protected(CellProtected *LCP) {
     char *buf;
     while (LCP != NULL) {
+        assert(LCP->data);
         buf = protected_to_str(LCP->data);
         if (buf != NULL) printf("%s\n", buf);
         LCP = LCP->next;
@@ -59,17 +63,26 @@ void delete_list_protected(CellProtected *LCP) {
     }
 }
 
-void verifyForList(CellProtected **LCP) {
+// Returns the number of error signatures and removes all incorrect objects
+int verifyForList(CellProtected **LCP) {
     CellProtected *lcp = *LCP, *tmp;
+    int            nb  = 0;
     if (!verify(lcp->data)) {
+        lcp  = lcp->next;
+        tmp  = *LCP;
         *LCP = (*LCP)->next;
+        delete_cell_protected(tmp);
+        nb++;
     }
-    while (lcp->next != NULL) {
+    while (lcp->next) {
+        assert(lcp->next->data);
         if (!verify(lcp->next->data)) {
             tmp       = lcp->next;
             lcp->next = lcp->next->next;
             delete_cell_protected(tmp);
+            nb++;
         }
         lcp = lcp->next;
     }
+    return nb;
 }

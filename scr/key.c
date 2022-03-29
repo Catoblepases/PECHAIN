@@ -32,7 +32,7 @@ char *key_to_str(Key *key) {
 Key *str_to_key(char *str) {
     Key *key = (Key *) malloc(sizeof(Key));
     long n = 0, val = 0;
-    if (sscanf(str, "(%ld,%ld)", &val, &n) >= 2) {
+    if (sscanf(str, "(%ld,%ld)", &n, &val) >= 2) {
         init_key(key, val, n);
         return key;
     }

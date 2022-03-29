@@ -53,7 +53,7 @@ void test1() {
     chaine          = key_to_str(pr->pKey);
     char *chaineSgn = signature_to_str(pr->sgn);
     printf("str-to-protected:.%s.%s.%s\n", chaine, pr->mess, chaineSgn);
-
+    printf("verify: %d\n", verify(pr));
     free(chaine);
     free(chaineSgn);
     free_protected(pr);
@@ -67,7 +67,7 @@ void test1() {
 }
 
 int main(void) {
-    // test1();
+    test1();
     // Creation de donnees pour simuler le processus de vote
     generate_random_data(100, 10);
     return 0;

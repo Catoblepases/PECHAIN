@@ -55,6 +55,7 @@ Protected *str_to_protected(char *str) {
     Key       *key = str_to_key(tmp[0]);
     Signature *sgn = str_to_signature(tmp[2]);
     // printf("constructiong result: %s %s %s\n", key_to_str(key), tmp[1], signature_to_str(sgn));
+    if ((!key) || (!sgn) || (!tmp[1])) return NULL;
     Protected *pr = init_protected(key, tmp[1], sgn);
     // free
     free(key);
