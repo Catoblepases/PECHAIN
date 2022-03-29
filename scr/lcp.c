@@ -22,6 +22,7 @@ CellProtected *read_protected(char *fileName) {
     Protected     *pr;
     while (fgets(buf, 1 << 12, f)) {
         pr = str_to_protected(buf);
+        if (!pr) continue;
         if (!LCP) {
             LCP = create_cell_protected(pr);
         } else {
@@ -50,13 +51,12 @@ void delete_cell_protected(CellProtected *c) {
 }
 
 void delete_list_protected(CellProtected *LCP) {
-    CellProtected *tmp = LCP, *lcp = LCP;
-    while (lcp != NULL) {
-        tmp = lcp->next;
-        delete_cell_protected(lcp);
-        lcp = tmp;
+    CellProtected *tmp = LCP;
+    while (LCP != NULL) {
+        tmp = LCP->next;
+        delete_cell_protected(LCP);
+        LCP = tmp;
     }
-    free(LCP);
 }
 
 void verifyForList(CellProtected **LCP) {

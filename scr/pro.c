@@ -43,8 +43,12 @@ Protected *str_to_protected(char *str) {
     int   idx    = 0;
     char *result = strtok(str, " ");
     while (result != NULL) {
+        if (idx >= 3) return NULL;
         tmp[idx++] = result;
         result     = strtok(NULL, " ");
+    }
+    if (idx != 3) {
+        return NULL;
     }
     // printf("reading result: %s %s %s\n", tmp[0], tmp[1], tmp[2]);
     // construct

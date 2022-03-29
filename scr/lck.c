@@ -39,9 +39,14 @@ CellKey *read_public_keys(char *fileName) {
 
 void print_list_keys(CellKey *LCK) {
     char *buf;
+    // printf("print_list_keys\n");
     while (LCK != NULL) {
+        // printf("----\n");
         buf = key_to_str(LCK->data);
-        if (buf != NULL) printf("%s\n", buf);
+        if (buf != NULL)
+            printf("%s\n", buf);
+        else
+            printf("print_list_key detected nullpointer\n");
         LCK = LCK->next;
         free(buf);
     }

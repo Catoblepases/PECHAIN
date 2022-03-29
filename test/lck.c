@@ -8,7 +8,7 @@ int test_file() {
     FILE *f = fopen(FILENAME, "r");
     if (f == NULL) {
         printf("warnning!\n");
-        return -1;
+        return 0;
     }
     char buf[100];
     printf("running!\n");
@@ -18,7 +18,7 @@ int test_file() {
     }
     printf("%s with %d liines\n", FILENAME, n);
     fclose(f);
-    return 0;
+    return 1;
 }
 
 int main(int argc, char const *argv[]) {
