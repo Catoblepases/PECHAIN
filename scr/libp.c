@@ -20,16 +20,28 @@ long modpow_naive(long a, long m, long n) {
     return res;
 }
 
+// long modpow(long a, long m, long n) {
+//     a = a % n;
+//     if (m == 0) return 1;
+//     if (m == 1) return a;
+//     if (m % 2 == 0) {
+//         long x = modpow(a, m / 2, n);
+//         return (x * x) % n;
+//     } else {
+//         long x = modpow(a, m - 1, n);
+//         return (x * a) % n;
+//     }
+// }
+
 long modpow(long a, long m, long n) {
     a = a % n;
     if (m == 0) return 1;
     if (m == 1) return a;
+    long x = modpow(a, m / 2, n);
     if (m % 2 == 0) {
-        long x = modpow(a, m / 2, n);
         return (x * x) % n;
     } else {
-        long x = modpow(a, m - 1, n);
-        return (x * a) % n;
+        return (x * x * a) % n;
     }
 }
 

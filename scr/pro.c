@@ -32,27 +32,32 @@ char *protected_to_str(Protected *pr) {
 }
 
 Protected *str_to_protected(char *str) {
-    // Storing key, message and signatures in sequence
-    char **tmp      = malloc(sizeof(char *) * 3);
-    int    separate = 1;
-    int    begin, idx = -1, pointAt = 0;
-    while (str[++idx] != '\0') {
+    // tmp storing key, message and signatures in sequence
+    char *tmp[3];
+    int   separate = 1;
+    int   begin, pointAt = 0;
+    for (int idx = 0; idx < strlen(str); idx++) {
         if (separate) {
             begin    = idx;
             separate = 0;
-        } else if (str[idx] == ' ') {
+        } else if ((str[idx] == ' ') || (idx == strlen(str) - 1)) {
             separate     = 1;
-            tmp[pointAt] = malloc(sizeof(char) * (idx - begin + 16));
-            strncpy(tmp[pointAt], str + begin, idx - begin + 1);
+            tmp[pointAt] = malloc(sizeof(char) * (idx - begin + 2));
+            printf("\n%d: %s(%d)\n", idx, str + begin, idx - begin);
+            strncpy(tmp[pointAt], str + begin, idx - begin);
+            pointAt++;
         }
     }
+    printf("reading result: %s %s %s\n", tmp[0], tmp[1], tmp[2]);
+    // construct
     Key       *key = str_to_key(tmp[0]);
     Signature *sgn = str_to_signature(tmp[1]);
     Protected *pr  = init_protected(key, tmp[2], sgn);
+    // free
+    free(key);
     for (int i = 0; i < 3; i++) {
         free(tmp[i]);
     }
-    free(tmp);
     return pr;
 }
 

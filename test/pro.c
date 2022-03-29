@@ -14,6 +14,7 @@ void test1() {
     // Testing Key Serialization
     char *chaine = key_to_str(pKey);
     printf("key_to_str:.%s.\n", chaine);
+
     Key *k = str_to_key(chaine);
     printf("str-to-key:-%lx,-%lx-\n", k->val, k->n);
     // Testing signature
@@ -45,6 +46,7 @@ void test1() {
     pr = str_to_protected(chaine);
     printf("strto-protected:.%s.%s.%s\n", key_to_str(pr->pKey), pr->mess,
            signature_to_str(pr->sgn));
+    free(chaine);
     free(pKey);
     free(sKey);
     free(pKeyC);

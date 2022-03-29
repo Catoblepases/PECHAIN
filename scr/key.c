@@ -24,15 +24,16 @@ char *key_to_str(Key *key) {
     if (key == NULL) {
         return strdup("null");
     }
-    char *out = (char *) malloc(1 << 15 * sizeof(char));
+    char *out = (char *) malloc(1 << 8 * sizeof(char));
     sprintf(out, "(%ld,%ld)", key->n, key->val);
     return out;
 }
 
 Key *str_to_key(char *str) {
     Key *key = (Key *) malloc(sizeof(Key));
-    long n, val;
+    long n = 0, val = 0;
     if (sscanf(str, "(%ld,%ld)", &val, &n) >= 2) {
+        init_key(key, val, n);
         return key;
     }
     return NULL;
