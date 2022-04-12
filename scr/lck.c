@@ -22,7 +22,8 @@ void add_head(CellKey **LCK, Key *key) {
     *LCK         = new;
 }
 
-/*Prend en entrée le fichier keys.txt ou le fichier candidates.txt, et retourne une liste chaînée contenant toutes les clés publiques du fichier.*/
+/*Prend en entrée le fichier keys.txt ou le fichier candidates.txt, et retourne une liste chaînée contenant toutes les
+ * clés publiques du fichier.*/
 CellKey *read_public_keys(char *fileName) {
     FILE    *f = fopen(fileName, "r");
     char     buf[1 << 12];
@@ -43,9 +44,7 @@ CellKey *read_public_keys(char *fileName) {
 /*Affiche une liste chaînée de clés.*/
 void print_list_keys(CellKey *LCK) {
     char *buf;
-    // printf("print_list_keys\n");
     while (LCK != NULL) {
-        // printf("----\n");
         buf = key_to_str(LCK->data);
         if (buf != NULL)
             printf("%s\n", buf);

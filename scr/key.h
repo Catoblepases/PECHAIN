@@ -1,5 +1,3 @@
-
-
 #ifndef __KEY__
 #define __KEY__
 
