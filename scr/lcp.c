@@ -69,28 +69,3 @@ void delete_list_protected(CellProtected *LCP) {
     }
 }
 
-/*Renvoie le nombre de signatures invalides et les supprime.*/
-int verifyForList(CellProtected **LCP) {
-    CellProtected *lcp = *LCP, *tmp;
-    int            nb  = 0;
-    //Vérifie la validité de la première déclaration signée.*/
-    if (!verify(lcp->data)) {
-        lcp  = lcp->next;
-        tmp  = *LCP;
-        *LCP = (*LCP)->next;
-        delete_cell_protected(tmp);
-        nb++;
-    }
-    while (lcp->next) {
-        assert(lcp->next->data);
-        //Vérifie la validité de la prochaine déclaration signée.
-        if (!verify(lcp->next->data)) {
-            tmp       = lcp->next;
-            lcp->next = lcp->next->next;
-            delete_cell_protected(tmp);
-            nb++;
-        }
-        lcp = lcp->next;
-    }
-    return nb;
-}
