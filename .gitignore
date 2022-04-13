@@ -1,8 +1,13 @@
+*
+!*.*
+!*/
 # Prerequisites
 *.d
 *.csv
 *.txt
-*
+.vscode
+*.sh
+*.log
 
 # Object files
 *.o

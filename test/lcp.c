@@ -5,7 +5,7 @@
 #define FILENAME "declarations.txt"
 int main(int argc, char const *argv[]) {
     CellProtected *LCP = read_protected(FILENAME);
-    // print_list_protected(LCP);
+    print_list_protected(LCP);
     printf("number of error signatures: %d\n", verifyForList(&LCP));
     delete_list_protected(LCP);
     return 0;
