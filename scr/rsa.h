@@ -1,4 +1,4 @@
-#include "libp.h"
+#include "prime.h"
 
 #ifndef __RSA
 #define __RSA

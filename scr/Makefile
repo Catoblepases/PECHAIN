@@ -1,6 +1,6 @@
 CFLAGS= -g -Wall
 
-OBJECTS = libp rsa sgn pro key lck lcp dge
+OBJECTS = prime rsa sgn pro key lck lcp hash blo blo_t sml
 
 all: $(OBJECTS:=.o)
 

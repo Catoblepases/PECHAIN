@@ -1,7 +1,7 @@
 
 
-#ifndef __LIBP__
-#define __LIBP__
+#ifndef __PRIME__
+#define __PRIME__
 
 int  is_prime_naive(long p);
 long modpow_naive(long a, long m, long n);

@@ -5,12 +5,12 @@
 #include <string.h>
 
 unsigned char *str_to_SHA256(const char *str) {
-    unsigned char *d = SHA256(str, strlen(str), 0);
-    unsigned char *out = malloc(sizeof(char) * (strlen(str) * 2 + 1));
+    unsigned char *d = SHA256((const unsigned char *) str, strlen((const char *) str), 0);
+    char *out = malloc(sizeof(char) * (strlen((const char *) str) * 2 + 1));
     out[strlen(str) * 2] = '\0';
     for (unsigned int j = 0; j < SHA256_DIGEST_LENGTH; j++)
         sprintf(out, "%02x", d[j]);
-    return out;
+    return (unsigned char *) out;
 }
 
 /**Ecrire dans fichier le bloc dans l'ordre :
@@ -19,11 +19,11 @@ unsigned char *str_to_SHA256(const char *str) {
  * - Le hachage du bloc precedent.
  * - leurs representants votants.
  * - proof of work. */
-void write_block(const char *file_name, Block *block) {
-    FILE *f = fopen(file_name, "w");
-    char buf[1 << 16], tmp;
+void write_block(char *fileName, Block *block) {
+    FILE *f = fopen(fileName, "w");
+    char buf[1 << 16], *tmp;
     tmp = key_to_str(block->author);
-    buf = sprintf(buf, "%s\n%s\n%d\n%s\n", tmp, block->hash, block->nonce, block->previous_hash);
+    sprintf(buf, "%s\n%s\n%d\n%s\n", tmp, block->hash, block->nonce, block->previous_hash);
     fputs(buf, f);
     free(tmp);
     CellProtected *lcp = block->votes;
@@ -37,22 +37,23 @@ void write_block(const char *file_name, Block *block) {
     fclose(f);
 }
 
-Block *read_block(const char *file_name) {
-    FILE *f = fopen(file_name, "w");
+Block *read_block(char *fileName) {
+    FILE *f = fopen(fileName, "w");
     Block *block = (Block *) malloc(sizeof(Block));
-    char buf[1 << 16], tmp;
+    char buf[1 << 16];
     int idx = 0;
     while (fgets(buf, 1 << 16, f) && (idx <= 3)) {
         switch (idx++) {
         case 0: block->author = str_to_key(buf); break;
-        case 1: block->hash = strdup(buf); break;
-        case 2: sscanf(buf, "%d", block->nonce); break;
-        case 3: block->previous_hash = strdup(buf); break;
+        case 1: block->hash = (unsigned char *) strdup(buf); break;
+        case 2: sscanf(buf, "%d", &(block->nonce)); break;
+        case 3: block->previous_hash = (unsigned char *) strdup(buf); break;
         default: break;
         }
     }
-    block->votes = read_protected(file_name);
+    block->votes = read_protected(fileName);
     fclose(f);
+    return block;
 }
 
 /**Genère une chaîne representant le bloc.
@@ -62,9 +63,9 @@ Block *read_block(const char *file_name) {
  * - leurs representants votants.
  * - proof of work. */
 char *block_to_str(Block *block) {
-    char buf[1 << 16], tmp;
+    char *buf = (char *) malloc(sizeof(char) * 1 << 16), *tmp;
     tmp = key_to_str(block->author);
-    buf = sprintf(buf, "%s %s %d ", tmp, block->previous_hash, block->nonce);
+    sprintf(buf, "%s %s %d ", tmp, block->previous_hash, block->nonce);
     free(tmp);
     CellProtected *lcp = block->votes;
     while (lcp) {
@@ -73,7 +74,7 @@ char *block_to_str(Block *block) {
         free(tmp);
         lcp = lcp->next;
     }
-    buf = sprintf(buf, " %d", block->nonce);
+    sprintf(buf, " %d", block->nonce);
     return buf;
 }
 
@@ -100,7 +101,7 @@ int verify_block(Block *block, int d) {
 void delete_block(Block *b) {
     free(b->hash);
     free(b->previous_hash);
-    CellProtected *LCP = b->votes, tmp;
+    CellProtected *LCP = b->votes, *tmp;
     while (LCP) {
         tmp = LCP->next;
         free(LCP);

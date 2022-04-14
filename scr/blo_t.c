@@ -1,4 +1,4 @@
-#include "bloT.h"
+#include "blo_t.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,6 +10,7 @@ CellTree *create_node(Block *b) {
     ct->firstChild = NULL;
     ct->height = 0;
     ct->nextBro = NULL;
+    return ct;
 }
 
 int update_height(CellTree *father, CellTree *child) {
@@ -56,7 +57,7 @@ void delete_node(CellTree *node) {
 void delete_tree(CellTree *cell) {
     if (!cell) return;
     if (!cell->father) delete_tree(cell);
-    CellTree *tmpBro = cell->firstChild, tmp;
+    CellTree *tmpBro = cell->firstChild, *tmp;
     while (tmpBro) {
         tmp = tmpBro->nextBro;
         delete_tree(tmpBro);
@@ -66,7 +67,7 @@ void delete_tree(CellTree *cell) {
 
 CellTree *highest_child(CellTree *cell) {
     CellTree *hc = NULL;
-    CellTree *child = father->firstChild;
+    CellTree *child = cell->firstChild;
     while (child) {
         if ((!hc) || (child->height > hc->height)) {
             hc = child;
@@ -82,4 +83,30 @@ CellTree *last_node(CellTree *tree) {
         return last_node(highestChild);
     }
     return highestChild;
+}
+
+CellProtected *fusion(CellProtected *lcp1, CellProtected *lcp2) {
+    if (lcp1 == NULL) return lcp2;
+    if (lcp2 == NULL) return lcp1;
+    CellProtected *lcp = fusion(lcp1->next, lcp2->next);
+    add_head_LCP(&lcp, lcp1->data);
+    add_head_LCP(&lcp, lcp2->data);
+    return lcp;
+}
+
+CellProtected *fusionAll(CellTree *tree) {
+    if (!tree) return NULL;
+    CellTree *tr = tree;
+    CellProtected *lcp = fusionAll(tree->firstChild);
+    while (tr->block) {
+        lcp = fusion(lcp, tr->block->votes);
+        tr = tr->nextBro;
+    }
+    return lcp;
+}
+
+CellProtected *LongestList(CellTree *tree) {
+    CellTree *highestChild = highest_child(tree);
+    CellProtected *lcp = fusionAll(highestChild);
+    return lcp;
 }

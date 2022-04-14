@@ -1,5 +1,5 @@
 CFLAGS=-g -Wall
-TEST_FILES = rsa pro libp sgn key lck lcp
+TEST_FILES = rsa pro prime sgn key lck lcp
 
 all:
 

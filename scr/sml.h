@@ -1,6 +1,6 @@
 #ifndef __SIMULATION__
 #define __SIMULATION__
-#include "bloT.h"
+#include "blo_t.h"
 #include "lck.h"
 void submit_vote(Protected *p);
 void create_block(CellTree *tree, Key *author, int d);

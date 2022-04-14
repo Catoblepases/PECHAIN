@@ -1,4 +1,4 @@
-#include "libp.h"
+#include "prime.h"
 #include "sgn.h"
 
 #ifndef __PROTECTION__

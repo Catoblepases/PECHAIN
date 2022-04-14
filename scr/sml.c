@@ -1,8 +1,11 @@
 #include "sml.h"
+#include "blo_t.h"
+#include "hash.h"
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 void submit_vote(Protected *p) {
     FILE *f = fopen("Pending_votes.txt", "a+");
     char *str = protected_to_str(p);
@@ -42,6 +45,16 @@ void add_block(int d, char *name) {
     fclose(fRead);
 }
 
+
+int strcmp_unsigned(const unsigned char *s1, const unsigned  char *s2) {
+    unsigned char *p1 = (unsigned char *) s1;
+    unsigned char *p2 = (unsigned char *) s2;
+    while ((*p1) && (*p1 == *p2)) {
+        ++p1;
+        ++p2;
+    }
+    return (*p1 - *p2);
+}
 // LECTURE DE L’ARBRE ET CALCUL DU GAGNANT
 CellTree *read_tree() {
     DIR *rep = opendir("./Blockchain/");
@@ -59,18 +72,32 @@ CellTree *read_tree() {
     }
     CellTree *cell[idx];
     for (int i = 0; i < idx; i++) {
-        cell[i] = read_block(fileName[i]);
+        cell[i] = create_node(read_block(fileName[i]));
     }
+
     for (int i = 0; i < idx; i++) {
         for (int j = 0; j < idx; j++) {
-            if (strcmp(cell[i]->block->hash, cell[j]->block->hash)) {
+            if (strcmp_unsigned(cell[i]->block->hash, cell[j]->block->hash)) {
                 add_child(cell[i], cell[j]);
             }
         }
     }
+
+    for (int i = 0; i < idx; i++) {
+        free(fileName[i]);
+    }
+
     for (int i = 0; i < idx; i++) {
         if (!cell[i]->father) return cell[i];
     }
+    return NULL;
 }
 
-Key *compute_winner_BT(CellTree *tree, CellKey *candidates, CellKey *voters, int sizeC, int sizeV);
+
+Key *compute_winner_BT(CellTree *tree, CellKey *candidates, CellKey *voters, int sizeC, int sizeV) {
+    CellProtected *lcp = fusionAll(tree);
+    verify_for_list_protected(&lcp);
+    Key *key = compute_winner(lcp, candidates, voters, sizeC, sizeV);
+    delete_cell_protected(lcp);
+    return key;
+}

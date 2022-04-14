@@ -1,4 +1,4 @@
-#include "libp.h"
+#include "prime.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>

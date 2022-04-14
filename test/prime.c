@@ -1,4 +1,4 @@
-#include "scr/libp.h"
+#include "scr/prime.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>

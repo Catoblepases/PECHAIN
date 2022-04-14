@@ -11,8 +11,8 @@ typedef struct block {
 } Block;
 
 unsigned char *str_to_SHA256(const char *str);
-void write_block(const char *file_name, Block *block);
-Block *read_block(const char *file_name);
+void write_block(char *fileName, Block *block);
+Block *read_block(char *fileName);
 char *block_to_str(Block *block);
 void compute_proof_of_work(Block *B, int d);
 int verify_block(Block *, int d);
