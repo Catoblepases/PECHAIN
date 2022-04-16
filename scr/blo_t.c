@@ -5,6 +5,7 @@
 
 CellTree *create_node(Block *b) {
     CellTree *ct = (CellTree *) malloc(sizeof(CellTree));
+    if (!ct) exit(3);
     ct->block = b;
     ct->father = NULL;
     ct->firstChild = NULL;
@@ -32,21 +33,27 @@ void add_child(CellTree *father, CellTree *child) {
         tmpChild->nextBro = child;
     }
     child->father = father;
-    update_height(father, child);
+    CellTree *Tfather = father;
+    while (Tfather) {
+        update_height(Tfather, child);
+        child = Tfather;
+        Tfather = Tfather->father;
+    }
 }
 
 void print_tree(CellTree *cell) {
     if (!cell) return;
-    if (!cell->father) {
-        printf("(%d,%s)\n", cell->height, cell->block->hash);
-    }
-    CellTree *child = cell->firstChild;
-    while (child) {
-        printf("(%d,%s) ", child->height, child->block->hash);
-        child = child->nextBro;
+    CellTree *tr = cell;
+    while (tr) {
+        printf("(%d,%s) ", tr->height, tr->block->hash);
+        tr = tr->nextBro;
     }
     printf("\n");
-    print_tree(cell->firstChild);
+    tr = cell;
+    while (tr) {
+        print_tree(tr->firstChild);
+        tr = tr->nextBro;
+    }
 }
 
 void delete_node(CellTree *node) {
@@ -56,11 +63,11 @@ void delete_node(CellTree *node) {
 
 void delete_tree(CellTree *cell) {
     if (!cell) return;
-    if (!cell->father) delete_tree(cell);
-    CellTree *tmpBro = cell->firstChild, *tmp;
+    CellTree *tmpBro = cell, *tmp;
     while (tmpBro) {
         tmp = tmpBro->nextBro;
-        delete_tree(tmpBro);
+        delete_tree(tmpBro->firstChild);
+        delete_node(tmpBro);
         tmpBro = tmp;
     }
 }
@@ -78,11 +85,9 @@ CellTree *highest_child(CellTree *cell) {
 }
 
 CellTree *last_node(CellTree *tree) {
-    CellTree *highestChild = highest_child(tree);
-    if (highestChild->height != 0) {
-        return last_node(highestChild);
-    }
-    return highestChild;
+    if (!tree) exit(4);
+    if (!tree->firstChild) return tree;
+    return last_node(highest_child(tree));
 }
 
 CellProtected *fusion(CellProtected *lcp1, CellProtected *lcp2) {

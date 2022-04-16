@@ -9,8 +9,8 @@
 int main() {
     srand(time(NULL));
     // Generation de cle:
-    long p = random_prime_number(15, 16, 500);
-    long q = random_prime_number(15, 16, 500);
+    long p = random_prime_number(12, 13, 500);
+    long q = random_prime_number(12, 13, 500);
     printf("p=%ld, q=%ld\n", p, q);
     long n, s, u;
     generate_key_values(p, q, &n, &s, &u);

@@ -13,5 +13,6 @@ CellKey *read_public_keys(char *fichier);
 void     print_list_keys(CellKey *LCK);
 void     delete_cell_key(CellKey *c);
 void     delete_list_key(CellKey *LCK);
+void add_head(CellKey **LCK, Key *key);
 
 #endif
