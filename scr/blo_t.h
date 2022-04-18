@@ -14,6 +14,7 @@ int update_height(CellTree *father, CellTree *child);
 void add_child(CellTree *father, CellTree *child);
 void print_tree(CellTree *ct);
 void delete_node(CellTree *node);
+void delete_tree(CellTree *node);
 CellTree *highest_child(CellTree *cell);
 CellTree *last_node(CellTree *tree);
 CellProtected *fusion(CellProtected*lcp1,CellProtected *lcp2);

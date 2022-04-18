@@ -16,21 +16,19 @@ unsigned char *str_to_SHA256(const char *str) {
 /**Ecrire dans fichier le bloc dans l'ordre :
  * - Clef de l'auteur.
  * - Le hachage du bloc.
+ * - proof of work.
  * - Le hachage du bloc precedent.
- * - leurs representants votants.
- * - proof of work. */
+ * - leurs representants votants.*/
 void write_block(char *fileName, Block *block) {
     FILE *f = fopen(fileName, "w");
     char buf[1 << 16], *tmp;
     tmp = key_to_str(block->author);
-    sprintf(buf, "%s\n%s\n%d\n%s\n", tmp, block->hash, block->nonce, block->previous_hash);
-    fputs(buf, f);
+    fprintf(f, "%s\n%s\n%d\n%s\n", tmp, block->hash, block->nonce, block->previous_hash);
     free(tmp);
     CellProtected *lcp = block->votes;
     while (lcp) {
         tmp = protected_to_str(lcp->data);
-        fputs(tmp, f);
-        fputs("\n", f);
+        fprintf(f, "%s\n", tmp);
         free(tmp);
         lcp = lcp->next;
     }
@@ -79,10 +77,10 @@ char *block_to_str(Block *block) {
 }
 
 void compute_proof_of_work(Block *B, int d) {
-    B->nonce = 0;
-    while (!verify_block(B, d)) {
-        B->nonce++;
-    }
+    // B->nonce = 0;
+    // while (!verify_block(B, d)) {
+    //     B->nonce++;
+    // }
 }
 
 int verify_block(Block *block, int d) {

@@ -6,7 +6,8 @@
 
 /*Renvoie 1 si p est premier et 0 sinon.*/
 int is_prime_naive(long p) {
-    /**/
+    if (p <= 0) exit(1);
+    if (p == 1) return 0;
     for (int i = 2; i < p / 2; i++) {
         if (p % i == 0) return 0;
     }
@@ -54,8 +55,9 @@ int witness(long a, long b, long d, long p) {
 /*Retourne un entier long générant aléatoirement entre low et up inclus.*/
 long rand_long(long low, long up) { return rand() % (up - low + 1) + low; }
 
-/**Réalise le test de Miller-Rabin en générant k valeurs de a au hasard, et en testant si chaque valeur de a est un témoin de Miller pour p. 
-*La fonction retourne 0 dès qu’un témoin de Miller est trouvé (p n’est pas premier), et retourne 1 si aucun témoin de Miller n’a été trouvé (p est très probablement premier).*/
+/**Réalise le test de Miller-Rabin en générant k valeurs de a au hasard, et en testant si chaque valeur de a est un
+ *témoin de Miller pour p. La fonction retourne 0 dès qu’un témoin de Miller est trouvé (p n’est pas premier), et
+ *retourne 1 si aucun témoin de Miller n’a été trouvé (p est très probablement premier).*/
 int is_prime_miller(long p, int k) {
     if (p == 2) {
         return 1;
@@ -72,7 +74,7 @@ int is_prime_miller(long p, int k) {
     }
     // On genere k valeurs pour a, et on teste si c’est un temoin :
     long a;
-    int  i;
+    int i;
     for (i = 0; i < k; i++) {
         a = rand_long(2, p - 1);
         if (witness(a, b, d, p)) return 0;
@@ -81,8 +83,8 @@ int is_prime_miller(long p, int k) {
 }
 
 /*Retourne un nombre premier de taille comprise entre low size et up size.
-— deux entiers low_size et up_size représentant respectivement la taille minimale et maximale du nombre premier à générer.
-— et un entier k représentant le nombre de tests de Miller à réaliser.*/
+— deux entiers low_size et up_size représentant respectivement la taille minimale et maximale du nombre premier à
+générer. — et un entier k représentant le nombre de tests de Miller à réaliser.*/
 long random_prime_number(int low_size, int up_size, int k) {
     if (up_size > 32) {
         up_size = 32;
@@ -90,13 +92,10 @@ long random_prime_number(int low_size, int up_size, int k) {
     if (low_size < 0) {
         low_size = 0;
     }
-    long n   = rand_long(1 << low_size, 1 << up_size);
+    long n = rand_long(1 << low_size, 1 << up_size);
     long num = 0;
     while (is_prime_miller(n, k) == 0) {
-        if (num++ >= (1 << 16)) {
-            printf("erreur after %ld\n", num);
-            exit(-1);
-        }
+        if (num++ >= (1 << 16)) exit(2);
         n = rand_long(1 << low_size, 1 << up_size);
     }
     return n;

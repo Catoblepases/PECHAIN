@@ -13,7 +13,6 @@ typedef struct hashtable {
     int size;
 } HashTable;
 
-int verify_for_list_protected(CellProtected **LCP);
 HashCell *create_hashcell(Key *key);
 int hash_function(Key *key, int size);
 int find_position(HashTable *t, Key *key);

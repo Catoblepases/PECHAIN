@@ -7,10 +7,11 @@
 
 /*Initialiser une clé déjà allouée*/
 void init_key(Key *key, long val, long n) {
-    key->n   = n;
+    key->n = n;
     key->val = val;
 }
 
+int compare_key(Key *key1, Key *key2) { return (key1->n == key2->n) && (key1->val == key2->val); }
 /*Initialiser une clé publique et une clé secrète (déjà allouées) en utilisant le protocole RSA.*/
 void init_pair_keys(Key *pKey, Key *sKey, int low_size, int up_size) {
     // Generation de cle:
@@ -28,6 +29,7 @@ char *key_to_str(Key *key) {
         return strdup("null");
     }
     char *out = (char *) malloc(1 << 8 * sizeof(char));
+    if (!out) exit(3);
     sprintf(out, "(%ld,%ld)", key->n, key->val);
     return out;
 }
@@ -35,6 +37,7 @@ char *key_to_str(Key *key) {
 /*Passer d'une chaîne de caractères à sa représentation sous forme de variable de type Key.*/
 Key *str_to_key(char *str) {
     Key *key = (Key *) malloc(sizeof(Key));
+    if (!key) exit(3);
     long n = 0, val = 0;
     if (sscanf(str, "(%ld,%ld)", &n, &val) >= 2) {
         init_key(key, val, n);
