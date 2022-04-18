@@ -15,10 +15,7 @@ HashCell *create_hashcell(Key *key) {
     return hc;
 }
 
-<<<<<<< HEAD
-/*Retourne la position d’un élément dans la table de hachage.*/
-int hash_function(Key *key, int size) { return (key->n) * (key->val) % size; }
-=======
+
 int hash_function(Key *key, int size) {
     char *str = key_to_str(key);
     int hash = 1;
@@ -29,7 +26,7 @@ int hash_function(Key *key, int size) {
     if (hash < 0) hash *= -1;
     return hash % size;
 }
->>>>>>> 874f9dd22d2bd2f171cbadb94a2d52e046d2c5b5
+
 
 /*cherche dans la table t s’il existe un élément dont la clé publique est key, en sachant que les collisions sont gérées par probing linéaire. 
 Si l’élément a été trouvé, la fonction retourne sa position dans la table, sinon la fonction retourne la position où il aurait dû être.*/
@@ -83,38 +80,7 @@ void delete_hashtable(HashTable *t) {
     free(t);
 }
 
-<<<<<<< HEAD
-/* Calcule le vainqueur de l’élection.*/
-Key *compute_winner(CellProtected *decl, CellKey *candidates, CellKey *voters, int sizeC, int sizeV) {
-    //Verifie la validité de message contenue dans la déclaration signée
-    verify_for_list_protected(&decl);
-    HashTable *Hc = create_hashtable(candidates, sizeC);
-    HashTable *Hv = create_hashtable(voters, sizeV);
-    int i, j, max = 0, gagne;
-    while (decl != NULL) {
-        for (i = 0; i < sizeV; i++) {
-            //La personne qui vote a le droit de voter
-            if (Hv->tab[i] != NULL && (Hv->tab[i])->key == decl->data->pKey) {
-                //La personne qui vote  n'a pas deja vote
-                if ((Hv->tab[i])->val == 0) {
-                    (Hv->tab[i])->val++;
-                    Key *k = str_to_key(decl->data->mess);
-                    for (j = 0; j < sizeC; j++) {
-                        // La personne sur qui porte le vote est bien un candidat de l'election
-                        if ((Hc->tab[j] != NULL) && ((Hc->tab[j])->key == k)) {
-                            (Hc->tab[j])->val++;
-                            //Trouve le gagnant
-                            if ((Hc->tab[j])->val > max) {
-                                max = (Hc->tab[j])->val;
-                                gagne = j;
-                            }
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-=======
+
 int vote_right(Key *vote, CellKey *candidates) {
     while (candidates) {
         if (compare_key(vote, candidates->data)) return 0;
@@ -138,7 +104,7 @@ Key *compute_winner(CellProtected *decl, CellKey *candidates, CellKey *voters, i
         tmpKey = str_to_key(vote->mess);
         if (tmpKey && ((pos = find_position(Hc, tmpKey)) != -1)) {
             Hc->tab[pos]->val++;
->>>>>>> 874f9dd22d2bd2f171cbadb94a2d52e046d2c5b5
+
         }
         free(tmpKey);
     }
