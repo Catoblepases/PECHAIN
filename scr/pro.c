@@ -139,12 +139,16 @@ void generate_random_data(int nbCitoyen, int nbCandidate) {
         // Génération de déclarations sur la base des numéros de candidats et des numéros de citoyens
         str = key_to_str(pKey[candidate[vote]]);
         // L'information est la clé publique des candidats
-        pr = init_protected(pKey[candidate[vote]], str, sign(str, sKey[i]));
-        buf = protected_to_str(pr);
-        fprintf(fDecl, "%s\n", buf);
+        pr = init_protected(pKey[i], str, sign(str, sKey[i]));
+
+        if (verify(pr)) {
+            buf = protected_to_str(pr);
+            fprintf(fDecl, "%s\n", buf);
+            if (buf) free(buf);
+        }
+
         if (str) free(str);
         if (pr) free_protected(pr);
-        if (buf) free(buf);
     }
 
     for (int i = 0; i < nbCitoyen; i++) {

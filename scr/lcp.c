@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*Alloue et initialise une cellule de liste chaînée de déclarations signées.*/
 CellProtected *create_cell_protected(Protected *pr) {
@@ -17,16 +18,16 @@ CellProtected *create_cell_protected(Protected *pr) {
 void add_head_LCP(CellProtected **LCP, Protected *pr) {
     assert(pr);
     CellProtected *new = create_cell_protected(pr);
-    new->next          = *LCP;
-    *LCP               = new;
+    new->next = *LCP;
+    *LCP = new;
 }
 
 /*Lit le fichier declarations.txt, et crée une liste contenant toutes les déclarations signées du fichier.*/
 CellProtected *read_protected(char *fileName) {
-    FILE          *f = fopen(fileName, "r");
-    char           buf[1 << 12];
+    FILE *f = fopen(fileName, "r");
+    char buf[1 << 12];
     CellProtected *LCP = NULL;
-    Protected     *pr;
+    Protected *pr;
     while (fgets(buf, 1 << 12, f)) {
         pr = str_to_protected(buf);
         if (!pr) continue;
@@ -35,6 +36,10 @@ CellProtected *read_protected(char *fileName) {
         } else {
             add_head_LCP(&LCP, pr);
         }
+        // char *str = protected_to_str(pr);
+        // assert(strncmp(str, buf, strlen(str)) == 0);
+        // assert(verify(pr));
+        // free(str);
     }
     fclose(f);
     return LCP;
@@ -95,4 +100,3 @@ int verify_for_list_protected(CellProtected **LCP) {
     }
     return nb;
 }
-

@@ -8,9 +8,10 @@
 void test1() {
     srand(time(NULL));
     // Testing Init Keys
+
     Key *pKey = malloc(sizeof(Key));
     Key *sKey = malloc(sizeof(Key));
-    init_pair_keys(pKey, sKey, 3, 7);
+    init_pair_keys(pKey, sKey, 5, 10);
     printf("pKey:%lx,%lx\n", pKey->val, pKey->n);
     printf("sKey:-%lx,-%lx-\n", sKey->val, sKey->n);
     // Testing Key Serialization
@@ -27,7 +28,7 @@ void test1() {
     init_pair_keys(pKeyC, sKeyC, 3, 7);
     // Declaration:
     char *mess = key_to_str(pKeyC);
-    chaine     = key_to_str(pKey);
+    chaine = key_to_str(pKey);
     printf("%svote.pour.%s\n", chaine, mess);
     free(chaine);
     Signature *sgn = sign(mess, sKey);
@@ -48,16 +49,38 @@ void test1() {
     } else {
         printf("Signature. non. valide\n");
     }
-    chaine = protected_to_str(pr);
-    printf("protected-to-str:.%s\n", chaine);
-    pr = str_to_protected(chaine);
-    free(chaine);
-    chaine          = key_to_str(pr->pKey);
+    char *chainePr = protected_to_str(pr);
+    printf("protected-to-str:.%s\n", chainePr);
+    pr = str_to_protected(chainePr);
+    chaine = key_to_str(pr->pKey);
     char *chaineSgn = signature_to_str(pr->sgn);
     printf("str-to-protected:.%s.%s.%s\n", chaine, pr->mess, chaineSgn);
     // Vérifiez que la structure écrite est la même que la variable originale.
-    printf("verify: %d\n", verify(pr));
+    if (verify(pr)) {
+        printf("Signature-valide\n");
+    } else {
+        printf("Signature. non. valide\n");
+    }
+
+    FILE *f = fopen("test_file.txt", "w+");
+
+    fprintf(f, "%s\n", chainePr);
+
+    rewind(f);
+
+    char buf[1 << 12];
+    fgets(buf, 1 << 12, f);
+    printf("%s\n", buf);
+    free(pr);
+    pr = str_to_protected(buf);
+    if (verify(pr)) {
+        printf("Signature-valide\n");
+    } else {
+        printf("Signature. non. valide\n");
+    }
+
     free(chaine);
+    free(chainePr);
     free(chaineSgn);
     free_protected(pr);
     free(mess);
@@ -67,10 +90,15 @@ void test1() {
     free(sKey);
     free(pKeyC);
     free(sKeyC);
+
+    fclose(f);
 }
 
 int main(void) {
-    test1();
+    // for (int i = 0; i < 20; i++) {
+    //     test1();
+    // }
+
     // Creation de donnees pour simuler le processus de vote
     generate_random_data(100, 10);
     return 0;
