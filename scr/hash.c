@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*Alloue une cellule de la table de hachage, et initialise ses champs en mettant la valeur à zéro.*/
 HashCell *create_hashcell(Key *key) {
     HashCell *hc = (HashCell *) malloc(sizeof(HashCell));
     if (!hc) exit(3);
@@ -13,6 +14,7 @@ HashCell *create_hashcell(Key *key) {
     hc->val = 0;
     return hc;
 }
+
 
 int hash_function(Key *key, int size) {
     char *str = key_to_str(key);
@@ -25,6 +27,9 @@ int hash_function(Key *key, int size) {
     return hash % size;
 }
 
+
+/*cherche dans la table t s’il existe un élément dont la clé publique est key, en sachant que les collisions sont gérées par probing linéaire. 
+Si l’élément a été trouvé, la fonction retourne sa position dans la table, sinon la fonction retourne la position où il aurait dû être.*/
 int find_position(HashTable *t, Key *key) {
     if (!key || !t) return -1;
     int posKey = hash_function(key, t->size), pos = posKey;
@@ -67,12 +72,14 @@ HashTable *create_hashtable(CellKey *keys, int size) {
     return ht;
 }
 
+/*Supprime une table de hachage.*/
 void delete_hashtable(HashTable *t) {
     for (int i = 0; i < t->size; i++) {
         if (t->tab[i]) free(t->tab[i]->key);
     }
     free(t);
 }
+
 
 int vote_right(Key *vote, CellKey *candidates) {
     while (candidates) {
@@ -97,6 +104,7 @@ Key *compute_winner(CellProtected *decl, CellKey *candidates, CellKey *voters, i
         tmpKey = str_to_key(vote->mess);
         if (tmpKey && ((pos = find_position(Hc, tmpKey)) != -1)) {
             Hc->tab[pos]->val++;
+
         }
         free(tmpKey);
     }
