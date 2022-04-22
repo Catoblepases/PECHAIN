@@ -20,29 +20,29 @@ unsigned char *str_to_SHA256(const char *str) {
  * - Le hachage du bloc precedent.
  * - leurs representants votants.*/
 void write_block(char *fileName, Block *block) {
-    // printf("%s\n", block_to_str(block));
     FILE *f = fopen(fileName, "w");
     if (!block) return;
-    char buf[1 << 16], *tmp;
-    tmp = key_to_str(block->author);
-    fprintf(f, "%s\n%s\n%d\n%s\n", tmp, block->hash, block->nonce, block->previous_hash);
-    // printf("%s\n%s\n%d\n%s\n", tmp, block->hash, block->nonce, block->previous_hash);
-    free(tmp);
+    char *tmp;
+    fprintf(f, "%s\n%s\n%d\n", key_to_str_static(block->author), block->hash, block->nonce);
+    if (block->previous_hash) fprintf(f, "%s\n", block->previous_hash);
+
     CellProtected *lcp = block->votes;
     while (lcp) {
         tmp = protected_to_str(lcp->data);
         fprintf(f, "%s\n", tmp);
-        // printf("%s\n", tmp);
         free(tmp);
         lcp = lcp->next;
     }
     fclose(f);
 }
 
+/** Éviter l'inexistence de la fonction strndup sur certains systèmes */
 char *_strndup(char *str, int size) {
-    char *out = malloc(sizeof(char) * (size + 1));
-    strncpy(out, str, size);
-    return out;
+    size_t len = strnlen(str, size);
+    char *new = (char *) malloc(len + 1);
+    if (new == NULL) return NULL;
+    new[len] = '\0';
+    return (char *) memcpy(new, str, len);
 }
 
 unsigned char *read_hash(char *buf) {
@@ -80,9 +80,7 @@ Block *read_block(char *fileName) {
  * - proof of work. */
 char *block_to_str(Block *block) {
     char *buf = (char *) malloc(sizeof(char) * 1 << 16), *tmp;
-    tmp = key_to_str(block->author);
-    sprintf(buf, "%s %s %d ", tmp, block->previous_hash, block->nonce);
-    free(tmp);
+    sprintf(buf, "%s %s %d ", key_to_str_static(block->author), block->previous_hash, block->nonce);
     CellProtected *lcp = block->votes;
     while (lcp) {
         tmp = protected_to_str(lcp->data);
@@ -94,18 +92,17 @@ char *block_to_str(Block *block) {
     tmp = malloc(sizeof(char) * 1 << 8);
     sprintf(tmp, "%d", block->nonce);
     strcat(buf, tmp);
-
     return buf;
 }
 
 void compute_proof_of_work(Block *B, int d) {
     B->nonce = 0;
-    while (!check_update_block(B, d)) {
+    while (!verify_and_update_block(B, d)) {
         B->nonce++;
     }
 }
 
-int check_update_block(Block *block, int d) {
+int verify_and_update_block(Block *block, int d) {
     if (block->hash) free(block->hash);
     char *str = block_to_str(block);
     block->hash = str_to_SHA256(str);
@@ -117,8 +114,7 @@ int check_update_block(Block *block, int d) {
 }
 
 int verify_block(Block *block, int d) {
-    if (!block->hash) return;
-    char *str = block_to_str(block);
+    if (!block->hash) return 0;
     for (int i = 0; i < d; i++) {
         if (block->hash[i] != '0') return 0;
     }
@@ -128,9 +124,14 @@ int verify_block(Block *block, int d) {
 /**Cette fonction ne libere pas la memoire associee au champs author.
  * Pour la liste chaınee votes, on libere les elements de la liste chaınee (CellProtected),
  * mais pas leur contenu (Protected). */
+void delete_block_partial(Block *b) {
+    free(b->hash);
+    free(b->previous_hash);
+    delete_list_protected(b->votes);
+}
+
 void delete_block(Block *b) {
     free(b->hash);
     free(b->previous_hash);
-    CellProtected *LCP = b->votes, *tmp;
-    delete_cell_protected(LCP);
+    delete_list_protected(b->votes);
 }

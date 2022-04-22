@@ -60,7 +60,7 @@ void print_list_protected(CellProtected *LCP) {
 
 /*Supprime une cellule de liste chaînée de déclarations sigées.*/
 void delete_cell_protected(CellProtected *c) {
-    if (c != NULL) {
+    if (c) {
         free_protected(c->data);
         free(c);
     }
@@ -68,7 +68,7 @@ void delete_cell_protected(CellProtected *c) {
 
 /*Supprime une liste chaînée de déclarations signées.*/
 void delete_list_protected(CellProtected *LCP) {
-    CellProtected *tmp = LCP;
+    CellProtected *tmp;
     while (LCP) {
         tmp = LCP->next;
         delete_cell_protected(LCP);

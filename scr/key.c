@@ -66,7 +66,6 @@ Key *str_to_key(char *str) {
 /*Passer d'une chaîne de caractères à sa représentation sous forme de variable de type Key.*/
 Key *str_to_key_static(char *str) {
     static Key *key;
-    long n = 0, val = 0;
     if (sscanf(str, "(%ld,%ld)", &(key->val), &(key->n)) >= 2) {
         return key;
     }

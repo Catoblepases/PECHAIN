@@ -19,6 +19,6 @@ int find_position(HashTable *t, Key *key);
 HashTable *create_hashtable(CellKey *keys, int size);
 void delete_hashtable(HashTable *t);
 Key *compute_winner(CellProtected *decl, CellKey *candidates, CellKey *voters, int sizeC, int sizeV);
-void print_HashCell(HashCell *hc, int pos);
-void print_HashCell(HashCell *hc, int idx);
+void print_Hashtable(HashTable *hv);
+void print_Hashcell(HashCell *hc, int idx);
 #endif

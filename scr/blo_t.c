@@ -67,15 +67,12 @@ void delete_node(CellTree *node) {
     free(node);
 }
 
-void delete_tree(CellTree *cell) {
-    if (!cell) return;
-    CellTree *tmpBro = cell, *tmp;
-    while (tmpBro) {
-        tmp = tmpBro->nextBro;
-        delete_tree(tmpBro->firstChild);
-        delete_node(tmpBro);
-        tmpBro = tmp;
-    }
+void delete_tree(CellTree *ct) {
+    if (!ct) return;
+    CellTree *firstBro = ct->nextBro, *firstChild = ct->firstChild;
+    delete_node(ct);
+    delete_tree(firstBro);
+    delete_tree(firstChild);
 }
 
 CellTree *highest_child(CellTree *cell) {

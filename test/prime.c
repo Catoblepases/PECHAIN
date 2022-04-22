@@ -61,7 +61,7 @@ void q1_2() {
 void f() {
     srand(time(NULL));
 
-    // QUESTION 1.1
+    // is_prime_naive
     assert(is_prime_naive(2) == 1);
     assert(is_prime_naive(173) == 1);
     assert(is_prime_naive(7643) == 1);
@@ -75,7 +75,7 @@ void f() {
 
     // QUESTION 1.2
     clock_t temps_initial, temps_final;
-    double temps_cpu, tps_1, tps_2, tps_cpu_last_prime;
+    double temps_cpu, tps_cpu_last_prime;
     int i = 0, save_time = 0;
     int last_prime = 2;
 

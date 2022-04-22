@@ -18,9 +18,6 @@ void submit_vote(Protected *p) {
 void create_block(CellTree *tree, Key *author, int d) {
     Block *block = (Block *) malloc(sizeof(Block));
     CellProtected *lcp = read_protected("Pending_votes.txt");
-
-    // print_list_protected(lcp);
-
     block->author = author;
     block->nonce = 0;
     block->votes = lcp;
@@ -52,7 +49,7 @@ void create_block(CellTree *tree, Key *author, int d) {
 
 void add_block(int d, char *name) {
     char path[1 << 16];
-    sprintf(path, "./Blockchain/%s.txt", name);
+    sprintf(path, "./blockchain/%s", name);
     Block *block = read_block("Pending_block");
 
     if ((!block) || (!verify_block(block, d))) exit(5);
@@ -73,7 +70,7 @@ int strcmp_unsigned(const unsigned char *s1, const unsigned char *s2) {
 
 // LECTURE DE L’ARBRE ET CALCUL DU GAGNANT
 CellTree *read_tree() {
-    DIR *rep = opendir("./Blockchain/");
+    DIR *rep = opendir("./blockchain/");
     char *fileName[1 << 8];
     int idx = 0;
     if (rep != NULL) {
@@ -81,7 +78,7 @@ CellTree *read_tree() {
         while ((dir = readdir(rep))) {
             if ((strcmp(dir->d_name, ".") != 0) && (strcmp(dir->d_name, "..") != 0)) {
                 fileName[idx] = (char *) malloc(sizeof(char) * 1 << 8);
-                sprintf(fileName[idx++], "./Blockchain/%s", dir->d_name);
+                sprintf(fileName[idx++], "./blockchain/%s", dir->d_name);
                 printf("%s\n", fileName[idx - 1]);
             }
         }
@@ -98,13 +95,12 @@ CellTree *read_tree() {
     for (int i = 0; i < idx; i++) {
         for (int j = 0; j < idx; j++) {
             if (!(cell[j]->block->previous_hash)) continue;
-            if (strcmp(cell[i]->block->hash, cell[j]->block->previous_hash) == 0) {
+            if (strcmp_unsigned(cell[i]->block->hash, cell[j]->block->previous_hash) == 0) {
                 printf("add child %d %d\n", i, j);
                 add_child(cell[i], cell[j]);
             }
         }
     }
-
     for (int i = 0; i < idx; i++) {
         free(fileName[i]);
     }
@@ -123,7 +119,7 @@ Key *compute_winner_BT(CellTree *tree, CellKey *candidates, CellKey *voters, int
     return key;
 }
 
-void Simulation(int d,int sizeC,int sizeV) {
+void Simulation(int d, int sizeC, int sizeV) {
     // Générer des volontaires
     Key *author = (Key *) malloc(sizeof(Key));
     Key *sKey = (Key *) malloc(sizeof(Key));
@@ -131,37 +127,33 @@ void Simulation(int d,int sizeC,int sizeV) {
     // Générer des datas
     // generate_random_data(sizeV, sizeC);
     // Lire datas
-    CellProtected *cellp = read_protected("declarations.txt");
+    CellProtected *decl = read_protected("declarations.txt");
     CellKey *voters = read_public_keys("keys.txt");
     CellKey *candidates = read_public_keys("candidates.txt");
-    FILE *f = fopen("declarations.txt", "r");
-    char buf[1 << 16];
-    int idx = 0;
     CellTree *tree = create_node(NULL);
+    int idx = 0;
     char *fileName;
     char fn[] = "block";
-    Protected *pr;
-    while (fgets(buf, 1 << 16, f) > 0) {
-        pr = str_to_protected(buf);
-        if (!pr) continue;
-        submit_vote(pr);
-        // printf("read protection %s\n", protected_to_str(pr));
+    CellProtected *tmp = decl;
+    while (tmp) {
+        submit_vote(tmp->data);
         if (idx++ % 10 == 9) {
             fileName = (char *) malloc(sizeof(char) * (1 << 8));
             if (!fileName) exit(3);
-            sprintf(fileName, "%s%d", fn, (idx / 10));
+            sprintf(fileName, "%s%d.txt", fn, (idx / 10));
             printf("create block %s\n", fileName);
-
             create_block(tree, author, d);
             add_block(d, fileName);
             free(fileName);
         }
+        tmp = tmp->next;
     }
-
+    delete_cell_protected(decl);
     CellTree *tr = read_tree();
     print_tree(tr);
-    compute_winner_BT(tr, candidates, voters, sizeC, sizeV);
-
+    Key *key = compute_winner_BT(tr, candidates, voters, sizeC, sizeV);
+    printf("winner of this election is %s\n", key_to_str_static(key));
     delete_tree(tr);
     delete_list_key(voters);
+    delete_list_key(candidates);
 }

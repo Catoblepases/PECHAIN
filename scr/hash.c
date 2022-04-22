@@ -59,7 +59,7 @@ HashTable *create_hashtable(CellKey *keys, int size) {
         assert(keys->data);
         if ((pos = find_position(ht, keys->data)) != -1) {
             ht->tab[pos] = create_hashcell(keys->data);
-            print_HashCell(ht->tab[pos], pos);
+            print_Hashcell(ht->tab[pos], pos);
         } else {
             ++nbError;
         }
@@ -67,7 +67,7 @@ HashTable *create_hashtable(CellKey *keys, int size) {
     }
     printf("position not found: %d\n", nbError);
 
-    print_Hashable(ht);
+    print_Hashtable(ht);
 
     return ht;
 }
@@ -80,17 +80,17 @@ void delete_hashtable(HashTable *t) {
     free(t);
 }
 
-void print_HashCell(HashCell *hc, int idx) {
+void print_Hashcell(HashCell *hc, int idx) {
     char *key = key_to_str(hc->key);
     printf("(%d,%d,%s)\n", idx, hc->val, key);
     free(key);
 }
 
-void print_Hashable(HashTable *Hc) {
+void print_Hashtable(HashTable *Hc) {
     int valide = 0;
     for (int i = 0; i < Hc->size; i++) {
         if (!Hc->tab[i]) continue;
-        print_HashCell(Hc->tab[i], i);
+        print_Hashcell(Hc->tab[i], i);
         valide++;
     }
     printf("Valeurs valides: %d(%d)\n", valide, Hc->size);

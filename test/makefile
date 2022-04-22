@@ -18,7 +18,7 @@ clean :
 	rm -f *.o
 	rm -f *.exe
 	rm -f $(TEST_FILES)
-	rm -f ./Blockchain/*.txt
+	rm -f ./blockchain/*.txt
 
 $(TEST_FILES): %: $(D_LIB)/%.o %.c
 	$(CC) $(CFLAGS) -o $@ $@.c $(TEST_FILES:%=$(D_LIB)/%.o) -lssl -lcrypto
