@@ -20,32 +20,50 @@ unsigned char *str_to_SHA256(const char *str) {
  * - Le hachage du bloc precedent.
  * - leurs representants votants.*/
 void write_block(char *fileName, Block *block) {
+    // printf("%s\n", block_to_str(block));
     FILE *f = fopen(fileName, "w");
+    if (!block) return;
     char buf[1 << 16], *tmp;
     tmp = key_to_str(block->author);
     fprintf(f, "%s\n%s\n%d\n%s\n", tmp, block->hash, block->nonce, block->previous_hash);
+    // printf("%s\n%s\n%d\n%s\n", tmp, block->hash, block->nonce, block->previous_hash);
     free(tmp);
     CellProtected *lcp = block->votes;
     while (lcp) {
         tmp = protected_to_str(lcp->data);
         fprintf(f, "%s\n", tmp);
+        // printf("%s\n", tmp);
         free(tmp);
         lcp = lcp->next;
     }
     fclose(f);
 }
 
+char *_strndup(char *str, int size) {
+    char *out = malloc(sizeof(char) * (size + 1));
+    strncpy(out, str, size);
+    return out;
+}
+
+unsigned char *read_hash(char *buf) {
+    if (strncmp(buf, "(null)", strlen("(null)")) == 0) {
+        return NULL;
+    }
+    return (unsigned char *) _strndup(buf, strlen(buf) - 1);
+}
+
 Block *read_block(char *fileName) {
-    FILE *f = fopen(fileName, "w");
+    FILE *f = fopen(fileName, "r");
+    if (!f) return NULL;
     Block *block = (Block *) malloc(sizeof(Block));
     char buf[1 << 16];
     int idx = 0;
     while (fgets(buf, 1 << 16, f) && (idx <= 3)) {
         switch (idx++) {
         case 0: block->author = str_to_key(buf); break;
-        case 1: block->hash = (unsigned char *) strdup(buf); break;
+        case 1: block->hash = read_hash(buf); break;
         case 2: sscanf(buf, "%d", &(block->nonce)); break;
-        case 3: block->previous_hash = (unsigned char *) strdup(buf); break;
+        case 3: block->previous_hash = read_hash(buf); break;
         default: break;
         }
     }
@@ -68,28 +86,42 @@ char *block_to_str(Block *block) {
     CellProtected *lcp = block->votes;
     while (lcp) {
         tmp = protected_to_str(lcp->data);
-        sprintf(buf, "%s-", tmp);
+        strcat(buf, tmp);
+        strcat(buf, "-");
         free(tmp);
         lcp = lcp->next;
     }
-    sprintf(buf, " %d", block->nonce);
+    tmp = malloc(sizeof(char) * 1 << 8);
+    sprintf(tmp, "%d", block->nonce);
+    strcat(buf, tmp);
+
     return buf;
 }
 
 void compute_proof_of_work(Block *B, int d) {
-    // B->nonce = 0;
-    // while (!verify_block(B, d)) {
-    //     B->nonce++;
-    // }
+    B->nonce = 0;
+    while (!check_update_block(B, d)) {
+        B->nonce++;
+    }
+}
+
+int check_update_block(Block *block, int d) {
+    if (block->hash) free(block->hash);
+    char *str = block_to_str(block);
+    block->hash = str_to_SHA256(str);
+    for (int i = 0; i < d; i++) {
+        if (block->hash[i] != '0') return 0;
+    }
+    free(str);
+    return 1;
 }
 
 int verify_block(Block *block, int d) {
+    if (!block->hash) return;
     char *str = block_to_str(block);
-    unsigned char *c = str_to_SHA256(str);
     for (int i = 0; i < d; i++) {
-        if (c[i] != '0') return 0;
+        if (block->hash[i] != '0') return 0;
     }
-    free(str);
     return 1;
 }
 
@@ -100,9 +132,5 @@ void delete_block(Block *b) {
     free(b->hash);
     free(b->previous_hash);
     CellProtected *LCP = b->votes, *tmp;
-    while (LCP) {
-        tmp = LCP->next;
-        free(LCP);
-        LCP = tmp;
-    }
+    delete_cell_protected(LCP);
 }

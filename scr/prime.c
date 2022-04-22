@@ -28,7 +28,7 @@ long modpow_naive(long a, long m, long n) {
 long modpow(long a, long m, long n) {
     a = a % n;
     if (m == 0) return 1;
-    if (m == 1) return a;
+    if (m == 1) return a % n;
     long x = modpow(a, m / 2, n);
     if (m % 2 == 0) {
         return (x * x) % n;

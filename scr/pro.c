@@ -119,7 +119,7 @@ void generate_random_data(int nbCitoyen, int nbCandidate) {
         } while (inside(candidate, i, candidate[i]));
 
         buf = key_to_str(pKey[candidate[i]]);
-        fprintf(fCandidate, "%d, %s\n", i + 1, buf);
+        fprintf(fCandidate, "%s\n", buf);
         if (buf) free(buf);
     }
     // genere une declaration de vote signee pour chaque citoyen

@@ -11,8 +11,8 @@
 #define FILE_BLOCKS_TEST "blocks_test.txt"
 #define FILE_PENDING_VOTES "pending_votes.txt"
 #define DIR_BLOCK "./blockchain/"
-#define NB_KEYS 200    // Nombre de personnes enregistre aux elections / declaration de vote
-#define NB_CANDIDATS 4 // Nombre de candidats parmis les personnes enregistre
+#define NB_KEYS 100    // Nombre de personnes enregistre aux elections / declaration de vote
+#define NB_CANDIDATS 10 // Nombre de candidats parmis les personnes enregistre
 
 // EXERCICE 6
 #define NB_TEST_FINDPOSITION 20
@@ -31,7 +31,7 @@ int main(void) {
     printf("----------END PRINT_LIST_KEYS----------\n\n\n");
 
     printf("----------START verify_for_list_protected----------\n");
-    // verify_for_list_protected(&lp);
+    verify_for_list_protected(&lp);
     printf("----------END verify_for_list_protected----------\n\n\n");
 
     // A present toutes les declarations sont bien verifier
@@ -62,6 +62,7 @@ int main(void) {
     delete_hashtable(ht);
     delete_list_key(lk);
     delete_list_protected(lp);
+    
     // free(list_decla);
     printf("----------END TEST HASH FUNCTIONS----------\n");
 
@@ -72,8 +73,10 @@ int main(void) {
     CellKey *lv = read_public_keys(FILE_KEYS);
     // ld == liste declaration
     CellProtected *ld = read_protected(FILE_DECLARATIONS);
+    print_list_protected(ld);
 
     Key *winner_key = compute_winner(ld, lc, lv, NB_CANDIDATS, NB_KEYS);
+    printf("%s\n", key_to_str(winner_key));
 
     delete_list_protected(ld);
     delete_list_key(lc);

@@ -25,6 +25,7 @@ void add_head_LCP(CellProtected **LCP, Protected *pr) {
 /*Lit le fichier declarations.txt, et crée une liste contenant toutes les déclarations signées du fichier.*/
 CellProtected *read_protected(char *fileName) {
     FILE *f = fopen(fileName, "r");
+    if (!f) exit(3);
     char buf[1 << 12];
     CellProtected *LCP = NULL;
     Protected *pr;
@@ -80,6 +81,7 @@ int verify_for_list_protected(CellProtected **LCP) {
     CellProtected *lcp = *LCP, *tmp;
     int nb = 0;
     // Vérifie la validité de la première déclaration signée.*/
+    assert(lcp->data);
     if (!verify(lcp->data)) {
         lcp = lcp->next;
         tmp = *LCP;

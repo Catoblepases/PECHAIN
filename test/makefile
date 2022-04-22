@@ -3,6 +3,7 @@ TEST_FILES = rsa pro prime sgn key lck lcp hash blo blo_t sml
 
 all:
 
+
 run: $(TEST_FILES)
 	for test in $(TEST_FILES); do \
 		echo  ;\
@@ -10,22 +11,14 @@ run: $(TEST_FILES)
 		echo test: "$$test"; \
 		echo ------------------------------------------------; \
 		echo  ;\
-	done
-
-testAll: $(TEST_FILES)
-	for test in $(TEST_FILES); do \
-		echo  ;\
-		echo ------------------------------------------------; \
-		echo test: "$$test"; \
-		echo ------------------------------------------------; \
-		echo  ;\
-		./$$test; \
+# ./$$test; \
 	done
 
 clean :
 	rm -f *.o
 	rm -f *.exe
 	rm -f $(TEST_FILES)
+	rm -f ./Blockchain/*.txt
 
 $(TEST_FILES): %: $(D_LIB)/%.o %.c
 	$(CC) $(CFLAGS) -o $@ $@.c $(TEST_FILES:%=$(D_LIB)/%.o) -lssl -lcrypto

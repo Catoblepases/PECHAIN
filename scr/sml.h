@@ -8,4 +8,5 @@ void add_block(int d, char *name);
 // LECTURE DE L’ARBRE ET CALCUL DU GAGNANT
 CellTree *read_tree();
 Key *compute_winner_BT(CellTree *tree, CellKey *candidates, CellKey *voters, int sizeC, int sizeV);
+void Simulation(int d,int sizeC,int sizeV);
 #endif

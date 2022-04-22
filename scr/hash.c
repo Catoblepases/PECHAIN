@@ -15,8 +15,7 @@ HashCell *create_hashcell(Key *key) {
     return hc;
 }
 
-
-int hash_function(Key *key, int size) {
+int hash_function1(Key *key, int size) {
     char *str = key_to_str(key);
     int hash = 1;
     for (int i = 0; i < strlen(str); i++) {
@@ -27,18 +26,20 @@ int hash_function(Key *key, int size) {
     return hash % size;
 }
 
+int hash_function(Key *key, int size) { return (key->n * key->val) % size; }
 
-/*cherche dans la table t s’il existe un élément dont la clé publique est key, en sachant que les collisions sont gérées par probing linéaire. 
-Si l’élément a été trouvé, la fonction retourne sa position dans la table, sinon la fonction retourne la position où il aurait dû être.*/
+/*cherche dans la table t s’il existe un élément dont la clé publique est key, en sachant que les collisions sont gérées
+par probing linéaire. Si l’élément a été trouvé, la fonction retourne sa position dans la table, sinon la fonction
+retourne la position où il aurait dû être.*/
 int find_position(HashTable *t, Key *key) {
     if (!key || !t) return -1;
     int posKey = hash_function(key, t->size), pos = posKey;
-    // printf("hash: %d %s\n", posKey, key_to_str(key));
     while (t->tab[pos]) {
         if (compare_key(t->tab[pos]->key, key)) break;
-        pos = (pos + 1) % t->size;
+        pos = (pos + 1) % (t->size);
         if (pos == posKey) return -1;
     }
+    // printf("find!%d\n", pos);
     return pos;
 }
 
@@ -55,20 +56,19 @@ HashTable *create_hashtable(CellKey *keys, int size) {
     }
     int pos, nbError = 0;
     while (keys) {
-        if ((pos = find_position(ht, keys->data)) == -1) continue;
-        // if ((pos = find_position(ht, keys->data)) == -1 && (++nbError)) continue;
-        ht->tab[pos] = create_hashcell(keys->data);
-        // printf("%d %s\n", pos, key_to_str(ht->tab[pos]->key));
+        assert(keys->data);
+        if ((pos = find_position(ht, keys->data)) != -1) {
+            ht->tab[pos] = create_hashcell(keys->data);
+            print_HashCell(ht->tab[pos], pos);
+        } else {
+            ++nbError;
+        }
         keys = keys->next;
     }
+    printf("position not found: %d\n", nbError);
 
-    HashCell *t = ht->tab;
-    printf("%d ", ht->size);
-    for (int i = 0; i < ht->size; i++) {
-        printf("%s ", key_to_str(t->key));
-    }
-    printf("\n");
-    printf("position not found: \n");
+    print_Hashable(ht);
+
     return ht;
 }
 
@@ -80,37 +80,68 @@ void delete_hashtable(HashTable *t) {
     free(t);
 }
 
+void print_HashCell(HashCell *hc, int idx) {
+    char *key = key_to_str(hc->key);
+    printf("(%d,%d,%s)\n", idx, hc->val, key);
+    free(key);
+}
 
-int vote_right(Key *vote, CellKey *candidates) {
+void print_Hashable(HashTable *Hc) {
+    int valide = 0;
+    for (int i = 0; i < Hc->size; i++) {
+        if (!Hc->tab[i]) continue;
+        print_HashCell(Hc->tab[i], i);
+        valide++;
+    }
+    printf("Valeurs valides: %d(%d)\n", valide, Hc->size);
+}
+
+int vote_right(Key *vote, CellKey *candidates, HashTable *voter) {
+    if ((!vote) || (!candidates)) return 0;
     while (candidates) {
         if (compare_key(vote, candidates->data)) return 0;
         candidates = candidates->next;
     }
-    return 1;
+    return find_position(voter, vote) != -1;
 }
 
+/**Si voté, retournez 1 sinon retournez 0 */
+int check_if_vote(HashTable *Hv, Protected *vote) {
+    int idx = find_position(Hv, vote->pKey);
+    return (idx != -1) && (Hv->tab[idx]) && ((Hv->tab[idx]->val++) != 0);
+}
+
+/* Calcule le vainqueur de l’élection.*/
 Key *compute_winner(CellProtected *decl, CellKey *candidates, CellKey *voters, int sizeC, int sizeV) {
-    // verify_for_list_protected(&decl);
     HashTable *Hc = create_hashtable(candidates, sizeC);
     HashTable *Hv = create_hashtable(voters, sizeV);
+    // print_Hashable((Hc));
+    // print_Hashable((Hv));
     int pos = 0;
     Key *tmpKey;
-    while (decl) {
+    while (decl && decl->data) {
         Protected *vote = decl->data;
         // Test pour les droits de vote
-        if (!vote_right(vote, candidates)) continue;
-        // Vérifier si les électeurs ont voté
-        if (Hv->tab[find_position(Hv, vote->pKey)]->val++ != 0) continue;
-        tmpKey = str_to_key(vote->mess);
-        if (tmpKey && ((pos = find_position(Hc, tmpKey)) != -1)) {
-            Hc->tab[pos]->val++;
-
+        if (vote_right(vote->pKey, candidates, Hv) && !(check_if_vote(Hv, vote))) {
+            tmpKey = str_to_key(vote->mess);
+            if (tmpKey && ((pos = find_position(Hc, tmpKey)) != -1)) {
+                if (Hc->tab[pos]) Hc->tab[pos]->val++;
+                free(tmpKey);
+            }
         }
-        free(tmpKey);
+        decl = decl->next;
     }
-    int gagne = 0;
+    int gagne = -1;
     for (int i = 1; i < sizeC; i++) {
-        if (Hc->tab[i]->val > Hc->tab[gagne]->val) gagne = i;
+        if (!Hc->tab[i]) continue;
+        int nbVote = Hc->tab[i]->val;
+        // Imprimer les statistiques
+        char *candidate = key_to_str_static(Hc->tab[i]->key);
+        printf("candidate: %s votes: %d(%.2f%%)\n", candidate, nbVote, (double) nbVote / sizeV);
+        if ((gagne == -1) || (nbVote > Hc->tab[gagne]->val)) {
+            gagne = i;
+        }
     }
+    if (gagne == -1) return NULL;
     return Hc->tab[gagne]->key;
 }

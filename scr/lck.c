@@ -17,21 +17,22 @@ CellKey *create_cell_key(Key *key) {
 
 /*Ajoute une clé en tête de liste.*/
 void add_head(CellKey **LCK, Key *key) {
+    if (!key) return;
     CellKey *new = create_cell_key(key);
-    new->next    = *LCK;
-    *LCK         = new;
+    new->next = *LCK;
+    *LCK = new;
 }
 
 /*Prend en entrée le fichier keys.txt ou le fichier candidates.txt, et retourne une liste chaînée contenant toutes les
  * clés publiques du fichier.*/
 CellKey *read_public_keys(char *fileName) {
-    FILE    *f = fopen(fileName, "r");
-    char     buf[1 << 12];
+    FILE *f = fopen(fileName, "r");
+    char buf[1 << 12];
     CellKey *LCK = NULL;
-    Key     *key;
+    Key *key;
     while (fgets(buf, 1 << 12, f)) {
         key = str_to_key(buf);
-        if (LCK == NULL) {
+        if (!LCK && key) {
             LCK = create_cell_key(key);
         } else {
             add_head(&LCK, key);
