@@ -1,5 +1,6 @@
 #include "pro.h"
 #include "rsa.h"
+#include "utility.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,6 +37,14 @@ char *protected_to_str(Protected *pr) {
     sprintf(out, "%s %s %s", key, pr->mess, sgn);
     free(key);
     free(sgn);
+    return out;
+}
+
+
+char *protected_to_str_static(Protected *pr) {
+    static char out[1<<16];
+    if (!out) exit(3);
+    sprintf(out, "%s %s %s", key_to_str_static(pr->pKey), pr->mess, signature_to_str(pr->sgn));
     return out;
 }
 
@@ -91,7 +100,7 @@ int inside(int *tab, int size, int num) {
 void generate_random_data(int nbCitoyen, int nbCandidate) {
     // genere nbCitoyen couples de cles (publique, secrete) diﬀerents representant les nbCitoyen
     // citoyens, cree un fchier keys.txt contenant tous ces couples de cles (un couple par ligne),
-    FILE *fKey = fopen("keys.txt", "w");
+    FILE *fKey = fopen(FILE_KEYS, "w");
     fprintf(fKey, "keyPublic keySecret\n");
     Key *pKey[nbCitoyen], *sKey[nbCitoyen];
     char *buf;
@@ -110,7 +119,7 @@ void generate_random_data(int nbCitoyen, int nbCandidate) {
     // selectionne nbCandidate cles publiques aleatoirement pour defnir les nbCandidate candidats,
     // cree un fchier candidates.txt contenant la cle publique de tous les candidats (une cle
     // publique par ligne),
-    FILE *fCandidate = fopen("candidates.txt", "w");
+    FILE *fCandidate = fopen(FILE_CANDIDATES, "w");
     srand(time(NULL));
     int candidate[nbCandidate];
     for (int i = 0; i < nbCandidate; i++) {
@@ -127,7 +136,7 @@ void generate_random_data(int nbCitoyen, int nbCandidate) {
 
     // cree un fchier declarations.txt contenant toutes les declarations signees
     // (une declaration par ligne)
-    FILE *fDecl = fopen("declarations.txt", "w");
+    FILE *fDecl = fopen(FILE_DECLARATIONS, "w");
     Protected *pr;
     int vote;
     char *str;

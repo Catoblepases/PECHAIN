@@ -1,4 +1,5 @@
 #include "blo.h"
+#include "utility.h"
 #include <openssl/sha.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,10 +7,16 @@
 
 unsigned char *str_to_SHA256(const char *str) {
     unsigned char *d = SHA256((const unsigned char *) str, strlen((const char *) str), 0);
-    char *out = malloc(sizeof(char) * (strlen((const char *) str) * 2 + 1));
-    out[strlen(str) * 2] = '\0';
-    for (unsigned int j = 0; j < SHA256_DIGEST_LENGTH; j++)
-        sprintf(out, "%02x", d[j]);
+    char *out = malloc(sizeof(char) * (strlen((char *) str) * 2 + 1));
+    char *tmp[1 << 4];
+    for (unsigned int j = 0; j < SHA256_DIGEST_LENGTH; j++) {
+        sprintf(tmp, "%02x", d[j]);
+        if (j == 0) {
+            strcpy(out, tmp);
+        } else {
+            strcat(out, tmp);
+        }
+    }
     return (unsigned char *) out;
 }
 
@@ -125,13 +132,34 @@ int verify_block(Block *block, int d) {
  * Pour la liste chaınee votes, on libere les elements de la liste chaınee (CellProtected),
  * mais pas leur contenu (Protected). */
 void delete_block_partial(Block *b) {
-    free(b->hash);
-    free(b->previous_hash);
-    delete_list_protected(b->votes);
+    if (b->hash) free(b->hash);
+    if (b->author) free(b->author);
+    if (b->previous_hash) free(b->previous_hash);
+    CellProtected *lcp = b->votes, *tmp;
+    while (lcp) {
+        tmp = lcp->next;
+        free(lcp);
+        lcp = tmp;
+    }
+    free(b);
 }
 
 void delete_block(Block *b) {
-    free(b->hash);
-    free(b->previous_hash);
+    if (b->hash) free(b->hash);
+    if (b->author) free(b->author);
+    if (b->previous_hash) free(b->previous_hash);
     delete_list_protected(b->votes);
+    free(b);
+}
+
+Block *create_random_block(Key *author) {
+    generate_random_data(100, NB_BLOCK_DECLARATIONS);
+    CellProtected *decl = read_protected(FILE_DECLARATIONS);
+    Block *block = (Block *) malloc(sizeof(Block));
+    block->author = author;
+    block->nonce = 0;
+    block->votes = decl;
+    block->previous_hash = NULL;
+    block->hash = NULL;
+    return block;
 }

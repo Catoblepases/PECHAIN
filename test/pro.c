@@ -8,18 +8,15 @@
 void test1() {
     srand(time(NULL));
     // Testing Init Keys
-
     Key *pKey = malloc(sizeof(Key));
     Key *sKey = malloc(sizeof(Key));
     init_pair_keys(pKey, sKey, 5, 10);
     printf("pKey:%lx,%lx\n", pKey->val, pKey->n);
     printf("sKey:-%lx,-%lx-\n", sKey->val, sKey->n);
     // Testing Key Serialization
-    char *chaine = key_to_str(pKey);
-    printf("key_to_str:.%s.\n", chaine);
-    Key *k = str_to_key(chaine);
+    printf("key_to_str:.%s.\n", key_to_str_static(pKey));
+    Key *k = str_to_key(key_to_str_static(pKey));
     printf("str-to-key:-%lx,-%lx-\n", k->val, k->n);
-    free(chaine);
     free(k);
     // Testing signature
     // Candidate keys:
@@ -27,79 +24,38 @@ void test1() {
     Key *sKeyC = malloc(sizeof(Key));
     init_pair_keys(pKeyC, sKeyC, 3, 7);
     // Declaration:
-    char *mess = key_to_str(pKeyC);
-    chaine = key_to_str(pKey);
-    printf("%svote.pour.%s\n", chaine, mess);
-    free(chaine);
-    Signature *sgn = sign(mess, sKey);
+    printf("%svote.pour.%s\n", key_to_str_static(pKey), key_to_str_static(pKeyC));
+    Signature *sgn = sign(key_to_str_static(pKey), sKey);
     printf("signature:…");
     print_long_vector(sgn->content, sgn->size);
-    chaine = signature_to_str(sgn);
-    printf("signature-to_str:%s.\n", chaine);
+    printf("signature-to_str:%s.\n", signature_to_str_static(sgn));
+    char *chaine = signature_to_str(sgn);
     free_signature(sgn);
     sgn = str_to_signature(chaine);
     printf("str-to_signature:…");
     print_long_vector(sgn->content, sgn->size);
     free(chaine);
     // Testing protected:
-    Protected *pr = init_protected(pKey, mess, sgn);
+    Protected *pr = init_protected(pKey, key_to_str_static(pKey), sgn);
     // Verification:
     if (verify(pr)) {
         printf("Signature-valide\n");
     } else {
         printf("Signature. non. valide\n");
     }
-    char *chainePr = protected_to_str(pr);
-    printf("protected-to-str:.%s\n", chainePr);
-    pr = str_to_protected(chainePr);
-    chaine = key_to_str(pr->pKey);
-    char *chaineSgn = signature_to_str(pr->sgn);
-    printf("str-to-protected:.%s.%s.%s\n", chaine, pr->mess, chaineSgn);
-    // Vérifiez que la structure écrite est la même que la variable originale.
-    if (verify(pr)) {
-        printf("Signature-valide\n");
-    } else {
-        printf("Signature. non. valide\n");
-    }
 
-    FILE *f = fopen("test_file.txt", "w+");
-
-    fprintf(f, "%s\n", chainePr);
-
-    rewind(f);
-
-    char buf[1 << 12];
-    fgets(buf, 1 << 12, f);
-    printf("%s\n", buf);
-    free(pr);
-    pr = str_to_protected(buf);
-    if (verify(pr)) {
-        printf("Signature-valide\n");
-    } else {
-        printf("Signature. non. valide\n");
-    }
-
-    free(chaine);
-    free(chainePr);
-    free(chaineSgn);
     free_protected(pr);
-    free(mess);
-    free_signature(sgn);
-
     free(pKey);
     free(sKey);
     free(pKeyC);
     free(sKeyC);
-
-    fclose(f);
 }
 
 int main(void) {
     // for (int i = 0; i < 20; i++) {
-    //     test1();
+    test1();
     // }
-
     // Creation de donnees pour simuler le processus de vote
-    generate_random_data(100, 10);
+    // generate_random_data(100, 10);
     return 0;
 }

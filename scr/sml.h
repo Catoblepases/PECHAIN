@@ -2,6 +2,7 @@
 #define __SIMULATION__
 #include "blo_t.h"
 #include "lck.h"
+#include "hash.h"
 void submit_vote(Protected *p);
 void create_block(CellTree *tree, Key *author, int d);
 void add_block(int d, char *name);

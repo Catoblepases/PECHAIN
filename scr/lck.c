@@ -5,14 +5,10 @@
 /* Alloue et initialise une cellule de liste chaînée.*/
 CellKey *create_cell_key(Key *key) {
     CellKey *LCK = (CellKey *) malloc(sizeof(CellKey));
-    if (LCK == NULL) {
-        printf("Erreur lors de l'allocation !");
-        return NULL;
-    } else {
-        LCK->data = key;
-        LCK->next = NULL;
-        return LCK;
-    }
+    if (!LCK) exit(3);
+    LCK->data = key;
+    LCK->next = NULL;
+    return LCK;
 }
 
 /*Ajoute une clé en tête de liste.*/
@@ -32,11 +28,7 @@ CellKey *read_public_keys(char *fileName) {
     Key *key;
     while (fgets(buf, 1 << 12, f)) {
         key = str_to_key(buf);
-        if (!LCK && key) {
-            LCK = create_cell_key(key);
-        } else {
-            add_head(&LCK, key);
-        }
+        add_head(&LCK, key);
     }
     fclose(f);
     return LCK;

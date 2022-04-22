@@ -28,7 +28,7 @@ CellProtected *read_protected(char *fileName) {
     if (!f) exit(3);
     char buf[1 << 12];
     CellProtected *LCP = NULL;
-    Protected *pr;
+    Protected *pr = NULL;
     while (fgets(buf, 1 << 12, f)) {
         pr = str_to_protected(buf);
         if (!pr) continue;
@@ -37,10 +37,6 @@ CellProtected *read_protected(char *fileName) {
         } else {
             add_head_LCP(&LCP, pr);
         }
-        // char *str = protected_to_str(pr);
-        // assert(strncmp(str, buf, strlen(str)) == 0);
-        // assert(verify(pr));
-        // free(str);
     }
     fclose(f);
     return LCP;

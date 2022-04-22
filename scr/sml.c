@@ -1,6 +1,5 @@
 #include "sml.h"
-#include "blo_t.h"
-#include "hash.h"
+#include "utility.h"
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,7 +7,7 @@
 
 void submit_vote(Protected *p) {
     if (!p) return;
-    FILE *f = fopen("Pending_votes.txt", "a+");
+    FILE *f = fopen(FILE_PENDING_VOTES, "a+");
     char *str = protected_to_str(p);
     fprintf(f, "%s\n", str);
     free(str);
@@ -17,7 +16,7 @@ void submit_vote(Protected *p) {
 
 void create_block(CellTree *tree, Key *author, int d) {
     Block *block = (Block *) malloc(sizeof(Block));
-    CellProtected *lcp = read_protected("Pending_votes.txt");
+    CellProtected *lcp = read_protected(FILE_PENDING_VOTES);
     block->author = author;
     block->nonce = 0;
     block->votes = lcp;
@@ -30,17 +29,12 @@ void create_block(CellTree *tree, Key *author, int d) {
     } else {
         block->previous_hash = last->block->hash;
     }
-
-    system("rm Pending_votes.txt");
+    remove(FILE_PENDING_VOTES);
     compute_proof_of_work(block, d);
-    write_block("Pending_block", block);
-
-    // printf("create node\n");
+    write_block(FILE_PENDING_BLOCK, block);
     CellTree *new = create_node(block);
     if ((tree) && (tree->block)) {
-        // printf("last node\n");
         CellTree *lastNode = last_node(tree);
-        // printf("add child\n");
         add_child(lastNode, new);
     } else {
         tree->block = block;
@@ -49,13 +43,13 @@ void create_block(CellTree *tree, Key *author, int d) {
 
 void add_block(int d, char *name) {
     char path[1 << 16];
-    sprintf(path, "./blockchain/%s", name);
-    Block *block = read_block("Pending_block");
+    sprintf(path, "%s%s", DIR_BLOCK, name);
+    Block *block = read_block(FILE_PENDING_BLOCK);
 
     if ((!block) || (!verify_block(block, d))) exit(5);
 
     write_block(path, block);
-    system("rm Pending_block");
+    remove(FILE_PENDING_VOTES);
 }
 
 int strcmp_unsigned(const unsigned char *s1, const unsigned char *s2) {
@@ -70,7 +64,7 @@ int strcmp_unsigned(const unsigned char *s1, const unsigned char *s2) {
 
 // LECTURE DE L’ARBRE ET CALCUL DU GAGNANT
 CellTree *read_tree() {
-    DIR *rep = opendir("./blockchain/");
+    DIR *rep = opendir(DIR_BLOCK);
     char *fileName[1 << 8];
     int idx = 0;
     if (rep != NULL) {
@@ -78,7 +72,7 @@ CellTree *read_tree() {
         while ((dir = readdir(rep))) {
             if ((strcmp(dir->d_name, ".") != 0) && (strcmp(dir->d_name, "..") != 0)) {
                 fileName[idx] = (char *) malloc(sizeof(char) * 1 << 8);
-                sprintf(fileName[idx++], "./blockchain/%s", dir->d_name);
+                sprintf(fileName[idx++], "%s%s", DIR_BLOCK, dir->d_name);
                 printf("%s\n", fileName[idx - 1]);
             }
         }
@@ -127,20 +121,19 @@ void Simulation(int d, int sizeC, int sizeV) {
     // Générer des datas
     // generate_random_data(sizeV, sizeC);
     // Lire datas
-    CellProtected *decl = read_protected("declarations.txt");
-    CellKey *voters = read_public_keys("keys.txt");
-    CellKey *candidates = read_public_keys("candidates.txt");
+    CellProtected *decl = read_protected(FILE_DECLARATIONS);
+    CellKey *voters = read_public_keys(FILE_KEYS);
+    CellKey *candidates = read_public_keys(FILE_CANDIDATES);
     CellTree *tree = create_node(NULL);
     int idx = 0;
     char *fileName;
-    char fn[] = "block";
     CellProtected *tmp = decl;
     while (tmp) {
         submit_vote(tmp->data);
         if (idx++ % 10 == 9) {
             fileName = (char *) malloc(sizeof(char) * (1 << 8));
             if (!fileName) exit(3);
-            sprintf(fileName, "%s%d.txt", fn, (idx / 10));
+            sprintf(fileName, "%s%d%s", FILE_BLOCK_PREFIX, (idx / 10), FILE_BLOCK_SUFFIX);
             printf("create block %s\n", fileName);
             create_block(tree, author, d);
             add_block(d, fileName);

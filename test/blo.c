@@ -4,89 +4,63 @@
 #include <string.h>
 #include <time.h>
 
-#include "params.h"
+#include "./scr/utility.h"
 #include "scr/blo.h"
 
 int main(void) {
 
-    printf("----------START BLOCK SERIALIZATION TEST----------\n");
-    // generation cles author
-    char *str_key = "(8977,6817)";
-    Key *pKey = str_to_key(str_key);
-    char *strKey = key_to_str(pKey);
-    printf("%s\n", strKey);
-    free(strKey);
+    // Générer des volontaires
+    print_with_sepatator("create author");
+    Key *pKey = (Key *) malloc(sizeof(Key));
+    Key *sKey = (Key *) malloc(sizeof(Key));
+    init_pair_keys(pKey, sKey, 1 << 3, 1 << 8);
 
-    // generation des declaration
-    CellProtected *lp = read_protected(FILE_DECLARATIONS);
+    // Créer un bloc
+    print_with_sepatator("create block");
+    Block *block = create_random_block(pKey);
 
-    Block *b = (Block *) malloc(sizeof(Block));
-    if (!b) exit(12);
+    // Blocs d'écriture et de lecture, conversions de chaînes de caractères
+    print_with_sepatator("write_block read_block");
+    write_block(FILE_BLOCKS, block);
+    Block *block_read = read_block(FILE_BLOCKS);
+    write_block(FILE_BLOCKS_TEST, block_read);
+    print_with_sepatator("block_to_str");
+    char *str_block = block_to_str(block_read);
+    printf("%s\n", str_block);
 
-    // on met des donnees random juste pour test
-    b->author = pKey;
-    b->hash = strdup("test_hash");
-    b->nonce = 0;
-    b->previous_hash = strdup("test_previous_hash");
-    b->votes = lp;
-    free(lp);
-
-    write_block(FILE_BLOCKS, b);
-
-    Block *b_read = read_block(FILE_BLOCKS);
-    write_block(FILE_BLOCKS_TEST, b_read);
-
-    printf("-----START BLOCK_TO_STR-----\n\n");
-    char *str_b = block_to_str(b_read);
-    printf("%s\n", str_b);
-    printf("-----END BLOCK_TO_STR-----\n\n");
-
-    printf("----------END BLOCK SERIALIZATION TEST----------\n\n\n");
-
-    printf("----------START TEST OPENSSL----------\n");
-    const char *s = "Rosetta code";
-    unsigned char *test_sha = SHA256(s, strlen(s), 0);
-
-    printf("Affichage SHA256: \n");
+    // Test sha256
+    print_with_sepatator("sha256");
+    unsigned char *hash = SHA256(str_block, strlen(str_block), 0);
+    printf("SHA256: ");
     for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        printf("%02x", test_sha[i]);
+        printf("%02x", hash[i]);
     }
     printf("\n");
-
-    printf("Affichage de notre SHA256: \n");
-    char *s2 = "Rosetta code";
-    char *res = str_to_SHA256(s2);
+    printf("str_to_SHA256: ");
+    char *res = str_to_SHA256(str_block);
     printf("%s\n", res);
     free(res);
-
-    printf("----------END TEST OPENSSL----------\n\n");
-
-    printf("----------START PROOF_OF_WORK COMPARISON----------\n\n");
-    clock_t temps_initial, temps_final;
+    free(str_block);
+    
+    //  PROOF_OF_WORK
+    clock_t time_initial, time_final;
     double temps_cpu, temps = 0.0;
-
-    int d_value = 0;
-    FILE *f = fopen("profOfWork.csv", "w");
+    int d = 0;
+    FILE *f = fopen(FILE_PROOF_OF_WORK, "w");
     fprintf(f, "d,time\n");
-    while (1) {
-        fprintf(f, "%d,%.6f\n", d_value, temps);
-        printf("Temps: %fs\tHash trouver pour d = %d: \t", temps, d_value);
-        temps_initial = clock();
-        compute_proof_of_work(b, d_value);
-        temps_final = clock();
-        temps = ((double) (temps_final - temps_initial)) / CLOCKS_PER_SEC;
-        if (temps > 300) {
-            break;
-        }
-        d_value += 1;
+    while (temps < 0.2) {
+        block->nonce = 0;
+        time_initial = clock();
+        compute_proof_of_work(block, d);
+        time_final = clock();
+        temps = ((double) (time_final - time_initial)) / CLOCKS_PER_SEC;
+        fprintf(f, "%d,%.2e\n", d, temps);
+        printf("d = %d: %.2e\n", d, temps);
+        d += 1;
     }
     fclose(f);
-
-    printf("\n----------END PROOF_OF_WORK COMPARISON----------\n\n\n");
-
-    free(str_b);
-    delete_block(b_read);
-    delete_block(b);
-
+    free(sKey);
+    delete_block(block_read);
+    delete_block(block);
     return 0;
 }

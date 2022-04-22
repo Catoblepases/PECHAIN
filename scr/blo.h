@@ -19,4 +19,5 @@ int verify_block(Block *, int d);
 void delete_block(Block *b);
 void free_block(Block *b);
 int verify_and_update_block(Block *block, int d);
+Block *create_random_block(Key *author);
 #endif
