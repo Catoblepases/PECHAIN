@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*Permettant à un citoyen de soumettre un vote, autrement d'ajouter son vote à la fin du fichier  "Pending votes.txt".*/
 void submit_vote(Protected *p) {
     if (!p) return;
     FILE *f = fopen(FILE_PENDING_VOTES, "a+");
@@ -23,6 +24,11 @@ CellTree *init_tree(Key *author, int d) {
     return tree;
 }
 
+/*
+— Crée un bloc valide contenant les votes en attente dans le fichier ”Pending votes.txt”,
+— Supprime le fichier ”Pending votes.txt” après avoir créé le bloc,
+— et écrit le bloc obtenu dans un fichier appelé "Pending block".
+*/
 void create_block(CellTree *tree, Key *author, int d) {
     Block *block = init_block(author, read_protected(FILE_PENDING_VOTES));
     CellTree *lastNode = last_node(tree);
@@ -35,6 +41,9 @@ void create_block(CellTree *tree, Key *author, int d) {
     remove(FILE_PENDING_VOTES);
 }
 
+/*vérifie que le bloc représenté par le fichier  "Pending block" est valide. 
+Si c'est le cas, la fonction crée un fichier appelé name représentant le bloc, puis l'ajoute dans le répertoire "Blockchain". 
+Dans tous les cas, le fichier  "Pending block" est ensuite supprimé.*/
 void add_block(int d, char *name) {
     char path[1 << 16];
     sprintf(path, "%s%s", DIR_BLOCK, name);
@@ -56,6 +65,7 @@ int strcmp_unsigned(const unsigned char *s1, const unsigned char *s2) {
 }
 
 // LECTURE DE L’ARBRE ET CALCUL DU GAGNANT
+/*Construire l'arbre correspondant aux blocs contenus dans le répertoire  "Blockchain".*/
 CellTree *read_tree() {
     DIR *rep = opendir(DIR_BLOCK);
     char *fileName[1 << 8];
@@ -73,16 +83,23 @@ CellTree *read_tree() {
     closedir(rep);
     printf("finish dir\n");
     // Créer des noeuds
+    // On crée un noeud de l'arbre pour chaque bloc contenu dans le répertoire, 
+    // et on stocke tous les noeuds dans un tableau T de type CellTree**.
     CellTree *cell[idx];
     for (int i = 0; i < idx; i++) {
         printf("%s\n", fileName[i]);
         cell[i] = create_node(read_block(fileName[i]));
     }
     printf("\nfinish block\n");
+
+    //On parcourt le tableau T de noeuds, et pour chaque noeud T[i], on recherche tous ses fils T[j] ;
+   //ce sont les noeuds contenant un bloc dont le champs previous hash est égal au champs hash du bloc du noeud T[i]. 
+  
     for (int i = 0; i < idx; i++) {
         for (int j = 0; j < idx; j++) {
             if (!(cell[j]->block->previous_hash)) continue;
             if (strcmp_unsigned(cell[i]->block->hash, cell[j]->block->previous_hash) == 0) {
+                //Chaque fils T[j] est ajouté à la liste des fils du noeud T[i] .
                 printf("add child %d %d\n", i, j);
                 add_child(cell[i], cell[j]);
             }
@@ -91,17 +108,23 @@ CellTree *read_tree() {
     for (int i = 0; i < idx; i++) {
         free(fileName[i]);
     }
+    //On parcourt une dernière fois le tableau T pour trouver la racine de l’arbre et la retourner.
     for (int i = 0; i < idx; i++) {
+        //noeud dont le champs father est égal à NULL.
         if (!cell[i]->father) return cell[i];
     }
     return NULL;
 }
 
+/*Détermine le gagnant de l'élection en se basant sur la plus longue chaîne de l'arbre.*/
 Key *compute_winner_BT(CellTree *tree, CellKey *candidates, CellKey *voters, int sizeC, int sizeV) {
+    //Extraction de la liste des déclarations de vote
     CellProtected *lcp = longestList(tree);
     print_list_protected(lcp);
+    //Suppression des déclarations de vote non valides
     int n = verify_for_list_protected(&lcp);
     printf("signature invalide :%d\n", n);
+    //Calcule le vainqueur de l'élection
     Key *key = compute_winner(lcp, candidates, voters, sizeC, sizeV);
     delete_list_protected(lcp);
     return key;
