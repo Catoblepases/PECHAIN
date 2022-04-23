@@ -70,9 +70,17 @@ void delete_node(CellTree *node) {
 
 void delete_tree(CellTree *ct) {
     if (!ct) return;
-    delete_node(ct);
     delete_tree(ct->firstChild);
     delete_tree(ct->nextBro);
+    delete_node(ct);
+}
+
+void delete_tree_partial(CellTree *ct) {
+    if (!ct) return;
+    delete_tree_partial(ct->firstChild);
+    delete_tree_partial(ct->nextBro);
+    delete_block_partial(ct->block);
+    free(ct);
 }
 
 CellTree *highest_child(CellTree *cell) {

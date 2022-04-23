@@ -31,7 +31,11 @@ void write_block(char *fileName, Block *block) {
     if (!block) return;
     char *tmp;
     fprintf(f, "%s\n%s\n%d\n", key_to_str_static(block->author), block->hash, block->nonce);
-    if (block->previous_hash) fprintf(f, "%s\n", block->previous_hash);
+    if (block->previous_hash)
+        fprintf(f, "%s\n", block->previous_hash);
+    else {
+        fprintf(f, "(null)\n");
+    }
 
     CellProtected *lcp = block->votes;
     while (lcp) {
@@ -131,7 +135,7 @@ int verify_block(Block *block, int d) {
 /**Cette fonction ne libere pas la memoire associee au champs author.
  * Pour la liste chaınee votes, on libere les elements de la liste chaınee (CellProtected),
  * mais pas leur contenu (Protected). */
-void delete_block_partial(Block *b) {
+void delete_block_ex(Block *b) {
     if (b->hash) free(b->hash);
     if (b->author) free(b->author);
     if (b->previous_hash) free(b->previous_hash);
@@ -144,31 +148,36 @@ void delete_block_partial(Block *b) {
     free(b);
 }
 
+void delete_block_partial(Block *b) {
+    if (b->hash) free(b->hash);
+    if (b->author) free(b->author);
+    if (b->previous_hash) free(b->previous_hash);
+    free(b);
+}
+
 void delete_block(Block *b) {
     if (!b) return;
     if (b->hash) free(b->hash);
     if (b->previous_hash) free(b->previous_hash);
+    if (b->author) free(b->author);
     delete_list_protected(b->votes);
     free(b);
 }
 
 Block *init_block(Key *author, CellProtected *lcp) {
     Block *block = (Block *) malloc(sizeof(Block));
-    block->author = author;
+    block->author = (Key *) malloc(sizeof(Key));
+    init_key(block->author, author->val, author->n);
     block->nonce = 0;
     block->votes = lcp;
     block->previous_hash = NULL;
     block->hash = NULL;
+    return block;
 }
 
 Block *create_random_block(Key *author) {
-    generate_random_data(100, NB_BLOCK_DECLARATIONS);
+    generate_random_data(20, NB_BLOCK_DECLARATIONS);
     CellProtected *decl = read_protected(FILE_DECLARATIONS);
-    Block *block = (Block *) malloc(sizeof(Block));
-    block->author = author;
-    block->nonce = 0;
-    block->votes = decl;
-    block->previous_hash = NULL;
-    block->hash = NULL;
+    Block *block = init_block(author, decl);
     return block;
 }

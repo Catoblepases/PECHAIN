@@ -16,6 +16,7 @@ void print_node(CellTree *node);
 void print_tree(CellTree *ct);
 void delete_node(CellTree *node);
 void delete_tree(CellTree *node);
+void delete_tree_partial(CellTree *ct);
 CellTree *highest_child(CellTree *cell);
 CellTree *last_node(CellTree *tree);
 CellProtected *fusion(CellProtected *lcp1, CellProtected *lcp2);

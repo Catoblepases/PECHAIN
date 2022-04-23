@@ -18,12 +18,12 @@ clean :
 	rm -f *.o
 	rm -f *.exe
 	rm -f $(TEST_FILES)
+	rm -f ./blockchain/*.txt
 
 cleanAll:
 	rm -f *.o
 	rm -f *.exe
 	rm -f $(TEST_FILES)
-	rm -f ./blockchain/*.txt
 	rm -f ./temp/*.txt
 	rm -f *.txt
 	rm -f *.csv
