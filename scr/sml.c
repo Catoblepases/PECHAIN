@@ -120,7 +120,6 @@ CellTree *read_tree() {
 Key *compute_winner_BT(CellTree *tree, CellKey *candidates, CellKey *voters, int sizeC, int sizeV) {
     //Extraction de la liste des déclarations de vote
     CellProtected *lcp = longestList(tree);
-    print_list_protected(lcp);
     //Suppression des déclarations de vote non valides
     int n = verify_for_list_protected(&lcp);
     printf("signature invalide :%d\n", n);
@@ -137,7 +136,7 @@ void Simulation(int d, int sizeC, int sizeV) {
     Key *sKey = (Key *) malloc(sizeof(Key));
     init_pair_keys(author, sKey, 1 << 3, 1 << 8);
     // Générer des datas
-    // generate_random_data(sizeV, sizeC);
+    generate_random_data(sizeV, sizeC);
     // Lire datas
     CellProtected *decl = read_protected(FILE_DECLARATIONS);
     CellKey *voters = read_public_keys(FILE_KEYS);

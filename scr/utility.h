@@ -6,8 +6,8 @@
 #define NB_TEST_MILLER 256 
 
 // Créer des données
-#define NB_KEYS 200    // Nombre d'électeurs
-#define NB_CANDIDATS 4 // Nombre de candidats
+#define NB_KEYS 100    // Nombre d'électeurs
+#define NB_CANDIDATS 5 // Nombre de candidats
 
 // Nom du fichier de stockage
 #define FILE_KEYS "./temp/keys.txt"
@@ -23,6 +23,7 @@
 // Nom du fichier pour tester
 #define FILE_BLOCK_DECLARATIONS "./temp/block_declarations.txt"
 #define FILE_PROOF_OF_WORK "./temp/proof_of_work.csv"
+#define FILE_DECLARATIONS_TEST "./temp/declarations_test.txt"
 #define FILE_BLOCKS_TEST "./temp/blocks_test.txt"
 #define NB_BLOCKS 10
 #define NB_BLOCK_DECLARATIONS 10

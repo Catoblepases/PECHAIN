@@ -8,6 +8,10 @@ clean:
 	rm -f $(OBJECTS:=.o)
 	rm -f $(OBJECTS:=)
 	
+cleanAll:
+	rm -f $(OBJECTS:=.o)
+	rm -f $(OBJECTS:=)
+	
 
 $(OBJECTS:=.o):%.o: %.c %.h
 	$(CC) $(CFLAGS) -c $(word 1,$^)

@@ -6,7 +6,7 @@
 *.csv
 *.txt
 .vscode
-*.sh
+# *.sh
 *.log
 
 # Object files

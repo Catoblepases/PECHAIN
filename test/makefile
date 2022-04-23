@@ -7,11 +7,11 @@ all:
 run: $(TEST_FILES)
 	for test in $(TEST_FILES); do \
 		echo  ;\
-		echo ------------------------------------------------; \
+		echo ++++++++++++++++++++++++++++++++++++++++++++++++; \
 		echo test: "$$test"; \
-		echo ------------------------------------------------; \
+		echo ++++++++++++++++++++++++++++++++++++++++++++++++; \
 		echo  ;\
-# ./$$test; \
+		./$$test; \
 	done
 
 clean :
@@ -21,12 +21,10 @@ clean :
 	rm -f ./blockchain/*.txt
 
 cleanAll:
-	rm -f *.o
-	rm -f *.exe
+	rm -f *.o *.exe *.txt *.csv *.log
 	rm -f $(TEST_FILES)
 	rm -f ./temp/*.txt
-	rm -f *.txt
-	rm -f *.csv
+	rm -f ./blockchain/*.txt
 
 $(TEST_FILES): %: $(D_LIB)/%.o %.c
 	$(CC) $(CFLAGS) -o $@ $@.c $(TEST_FILES:%=$(D_LIB)/%.o) -lssl -lcrypto

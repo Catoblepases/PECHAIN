@@ -25,3 +25,8 @@ clean:
 	for sdir in $(SUBDIRS); do \
 		$(MAKE) -C $$sdir clean; \
 	done
+
+cleanAll:
+	for sdir in $(SUBDIRS); do \
+		$(MAKE) -C $$sdir cleanAll; \
+	done

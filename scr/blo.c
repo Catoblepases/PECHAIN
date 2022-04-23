@@ -184,7 +184,7 @@ Block *init_block(Key *author, CellProtected *lcp) {
 }
 
 Block *create_random_block(Key *author) {
-    generate_random_data(20, NB_BLOCK_DECLARATIONS);
+    generate_random_data(NB_KEYS, NB_BLOCK_DECLARATIONS);
     CellProtected *decl = read_protected(FILE_DECLARATIONS);
     Block *block = init_block(author, decl);
     return block;
