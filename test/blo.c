@@ -30,21 +30,20 @@ int main(void) {
 
     // Test sha256
     print_with_sepatator("sha256");
-    unsigned char *hash = SHA256(str_block, strlen(str_block), 0);
+    unsigned char *hash = SHA256((unsigned char *) str_block, strlen(str_block), 0);
     printf("SHA256: ");
     for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
         printf("%02x", hash[i]);
     }
     printf("\n");
     printf("str_to_SHA256: ");
-    char *res = str_to_SHA256(str_block);
-    printf("%s\n", res);
-    free(res);
+    block->hash = str_to_SHA256(str_block);
+    printf("%s\n", (char *) block->hash);
     free(str_block);
-    
+
     //  PROOF_OF_WORK
     clock_t time_initial, time_final;
-    double temps_cpu, temps = 0.0;
+    double temps = 0.0;
     int d = 0;
     FILE *f = fopen(FILE_PROOF_OF_WORK, "w");
     fprintf(f, "d,time\n");

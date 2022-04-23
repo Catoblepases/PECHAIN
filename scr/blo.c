@@ -8,7 +8,7 @@
 unsigned char *str_to_SHA256(const char *str) {
     unsigned char *d = SHA256((const unsigned char *) str, strlen((const char *) str), 0);
     char *out = malloc(sizeof(char) * (strlen((char *) str) * 2 + 1));
-    char *tmp[1 << 4];
+    char tmp[1 << 4];
     for (unsigned int j = 0; j < SHA256_DIGEST_LENGTH; j++) {
         sprintf(tmp, "%02x", d[j]);
         if (j == 0) {
@@ -96,9 +96,9 @@ char *block_to_str(Block *block) {
         free(tmp);
         lcp = lcp->next;
     }
-    tmp = malloc(sizeof(char) * 1 << 8);
-    sprintf(tmp, "%d", block->nonce);
-    strcat(buf, tmp);
+    char stmp[1 << 8];
+    sprintf(stmp, "%d", block->nonce);
+    strcat(buf, stmp);
     return buf;
 }
 
@@ -113,10 +113,10 @@ int verify_and_update_block(Block *block, int d) {
     if (block->hash) free(block->hash);
     char *str = block_to_str(block);
     block->hash = str_to_SHA256(str);
+    free(str);
     for (int i = 0; i < d; i++) {
         if (block->hash[i] != '0') return 0;
     }
-    free(str);
     return 1;
 }
 
@@ -145,11 +145,20 @@ void delete_block_partial(Block *b) {
 }
 
 void delete_block(Block *b) {
+    if (!b) return;
     if (b->hash) free(b->hash);
-    if (b->author) free(b->author);
     if (b->previous_hash) free(b->previous_hash);
     delete_list_protected(b->votes);
     free(b);
+}
+
+Block *init_block(Key *author, CellProtected *lcp) {
+    Block *block = (Block *) malloc(sizeof(Block));
+    block->author = author;
+    block->nonce = 0;
+    block->votes = lcp;
+    block->previous_hash = NULL;
+    block->hash = NULL;
 }
 
 Block *create_random_block(Key *author) {

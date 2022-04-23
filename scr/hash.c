@@ -15,18 +15,10 @@ HashCell *create_hashcell(Key *key) {
     return hc;
 }
 
-int hash_function1(Key *key, int size) {
-    char *str = key_to_str(key);
-    int hash = 1;
-    for (int i = 0; i < strlen(str); i++) {
-        hash *= (int) str[i];
-    }
-    free(str);
-    if (hash < 0) hash *= -1;
-    return hash % size;
+int hash_function(Key *key, int size) {
+    if (!key) exit(5);
+    return (key->n * key->val) % size;
 }
-
-int hash_function(Key *key, int size) { return (key->n * key->val) % size; }
 
 /*cherche dans la table t s’il existe un élément dont la clé publique est key, en sachant que les collisions sont gérées
 par probing linéaire. Si l’élément a été trouvé, la fonction retourne sa position dans la table, sinon la fonction
@@ -43,40 +35,47 @@ int find_position(HashTable *t, Key *key) {
     return pos;
 }
 
+HashCell **init_tab_hashCell(int size) {
+    HashCell **tab = (HashCell **) malloc(sizeof(HashCell *) * size);
+    if (!tab) exit(3);
+    for (int i = 0; i < size; i++) {
+        tab[i] = NULL;
+    }
+    return tab;
+}
+
 /*Cree et initialise une table de hachage de taille size contenant une cellule pour chaque cle de la liste chaınee
 keys.*/
 HashTable *create_hashtable(CellKey *keys, int size) {
     HashTable *ht = (HashTable *) malloc(sizeof(HashTable));
     if (!ht) exit(3);
     ht->size = size;
-    ht->tab = (HashCell **) malloc(sizeof(HashCell *) * size);
-    if (!ht->tab) exit(3);
-    for (int i = 0; i < size; i++) {
-        ht->tab[i] = NULL;
-    }
+    ht->tab = init_tab_hashCell(size);
     int pos, nbError = 0;
     while (keys) {
         assert(keys->data);
         if ((pos = find_position(ht, keys->data)) != -1) {
             ht->tab[pos] = create_hashcell(keys->data);
-            print_Hashcell(ht->tab[pos], pos);
         } else {
             ++nbError;
         }
         keys = keys->next;
     }
-    printf("position not found: %d\n", nbError);
-
-    print_Hashtable(ht);
-
+    printf("position not found: %d(%.2f%%)\n", nbError, (double) nbError / size);
     return ht;
+}
+
+void delete_hashcell(HashCell *t) {
+    if (!t) return;
+    free(t);
 }
 
 /*Supprime une table de hachage.*/
 void delete_hashtable(HashTable *t) {
     for (int i = 0; i < t->size; i++) {
-        if (t->tab[i]) free(t->tab[i]->key);
+        delete_hashcell(t->tab[i]);
     }
+    free(t->tab);
     free(t);
 }
 
@@ -126,8 +125,8 @@ Key *compute_winner(CellProtected *decl, CellKey *candidates, CellKey *voters, i
             tmpKey = str_to_key(vote->mess);
             if (tmpKey && ((pos = find_position(Hc, tmpKey)) != -1)) {
                 if (Hc->tab[pos]) Hc->tab[pos]->val++;
-                free(tmpKey);
             }
+            free(tmpKey);
         }
         decl = decl->next;
     }
@@ -136,12 +135,15 @@ Key *compute_winner(CellProtected *decl, CellKey *candidates, CellKey *voters, i
         if (!Hc->tab[i]) continue;
         int nbVote = Hc->tab[i]->val;
         // Imprimer les statistiques
-        char *candidate = key_to_str_static(Hc->tab[i]->key);
-        printf("candidate: %s votes: %d(%.2f%%)\n", candidate, nbVote, (double) nbVote / sizeV);
+        printf("candidate: %s votes: %d(%.2f%%)\n", key_to_str_static(Hc->tab[i]->key), nbVote,
+               (double) nbVote / sizeV);
         if ((gagne == -1) || (nbVote > Hc->tab[gagne]->val)) {
             gagne = i;
         }
     }
+    Key *key = Hc->tab[gagne]->key;
     if (gagne == -1) return NULL;
-    return Hc->tab[gagne]->key;
+    delete_hashtable(Hc);
+    delete_hashtable(Hv);
+    return key;
 }

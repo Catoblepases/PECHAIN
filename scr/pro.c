@@ -32,18 +32,16 @@ int verify(Protected *pr) {
  * Retourne une chaîne de caractères protégée, La chaîne doit contenir dans l'ordre:
  * - la clé publique de l'expéditeur,- son message,- sa signature, séparés par un espace */
 char *protected_to_str(Protected *pr) {
-    char *out = malloc(sizeof(char) * 1 << 12), *key = key_to_str(pr->pKey), *sgn = signature_to_str(pr->sgn);
+    char *out = malloc(sizeof(char) * 1 << 12), *sgn = signature_to_str(pr->sgn);
     if (!out) exit(3);
-    sprintf(out, "%s %s %s", key, pr->mess, sgn);
-    free(key);
+    sprintf(out, "%s %s %s", key_to_str_static(pr->pKey), pr->mess, sgn);
     free(sgn);
     return out;
 }
 
-
 char *protected_to_str_static(Protected *pr) {
-    static char out[1<<16];
-    if (!out) exit(3);
+    if (!pr) return "null";
+    static char out[1 << 16];
     sprintf(out, "%s %s %s", key_to_str_static(pr->pKey), pr->mess, signature_to_str(pr->sgn));
     return out;
 }
@@ -53,13 +51,18 @@ Protected *str_to_protected(char *str) {
     // tmp stocke la clé, le message et les signatures en séquenbCandidatee
     char bufSgn[1 << 8], bufPKey[1 << 8];
     char *mess = (char *) malloc(sizeof(char) * 1 << 8);
+    Protected *pr = NULL;
     if (!mess) exit(3);
     if (sscanf(str, "%s %s %s", bufPKey, mess, bufSgn) == 3) {
         Key *pKey = str_to_key(bufPKey);
         Signature *sgn = str_to_signature(bufSgn);
-        if ((sgn) && (pKey)) return init_protected(pKey, mess, sgn);
+        if ((sgn) && (pKey)) {
+            pr = init_protected(pKey, mess, sgn);
+        }
+        free(pKey);
     }
-    return NULL;
+    free(mess);
+    return pr;
 }
 
 /**Liberer l'espace occupé par les protégés*/

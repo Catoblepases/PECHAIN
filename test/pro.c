@@ -1,4 +1,5 @@
 #include "scr/pro.h"
+#include "scr/rsa.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,6 +57,6 @@ int main(void) {
     test1();
     // }
     // Creation de donnees pour simuler le processus de vote
-    // generate_random_data(100, 10);
+    generate_random_data(100, 10);
     return 0;
 }

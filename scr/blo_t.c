@@ -63,16 +63,16 @@ void print_tree(CellTree *cell) {
 }
 
 void delete_node(CellTree *node) {
+    if (!node) return;
     delete_block(node->block);
     free(node);
 }
 
 void delete_tree(CellTree *ct) {
     if (!ct) return;
-    CellTree *firstBro = ct->nextBro, *firstChild = ct->firstChild;
     delete_node(ct);
-    delete_tree(firstBro);
-    delete_tree(firstChild);
+    delete_tree(ct->firstChild);
+    delete_tree(ct->nextBro);
 }
 
 CellTree *highest_child(CellTree *cell) {

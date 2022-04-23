@@ -60,5 +60,6 @@ Key *str_to_key(char *str) {
         init_key(key, val, n);
         return key;
     }
+    free(key);
     return NULL;
 }

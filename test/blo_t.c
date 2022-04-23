@@ -37,5 +37,7 @@ int main(void) {
     print_with_sepatator("delete_tree and delete_node");
     delete_tree(tab_node[0]);
     free(tab_node);
+    free(sKey);
+    free(author);
     return 0;
 }

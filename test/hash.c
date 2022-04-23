@@ -18,13 +18,13 @@ int main(void) {
     print_with_sepatator("create_hashtable");
     HashTable *ht = create_hashtable(voters, NB_KEYS);
     print_Hashtable(ht);
-    delete_hashtable(ht);
     print_with_sepatator("compute_winner");
     Key *winner_key = compute_winner(declarations, candidates, voters, NB_CANDIDATS, NB_KEYS);
-    printf("%s\n", key_to_str(winner_key));
+    printf("%s\n", key_to_str_static(winner_key));
 
     delete_list_protected(declarations);
     delete_list_key(candidates);
     delete_list_key(voters);
+    delete_hashtable(ht);
     return 0;
 }

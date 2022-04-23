@@ -15,18 +15,9 @@ void submit_vote(Protected *p) {
 }
 
 void create_block(CellTree *tree, Key *author, int d) {
-    Block *block = (Block *) malloc(sizeof(Block));
-    CellProtected *lcp = read_protected(FILE_PENDING_VOTES);
-    block->author = author;
-    block->nonce = 0;
-    block->votes = lcp;
-    block->previous_hash = NULL;
-    block->hash = NULL;
-
+    Block *block = init_block(author, read_protected(FILE_PENDING_VOTES));
     CellTree *last = last_node(tree);
-    if (!last) {
-        block->previous_hash = NULL;
-    } else {
+    if (last) {
         block->previous_hash = last->block->hash;
     }
     remove(FILE_PENDING_VOTES);
@@ -45,11 +36,10 @@ void add_block(int d, char *name) {
     char path[1 << 16];
     sprintf(path, "%s%s", DIR_BLOCK, name);
     Block *block = read_block(FILE_PENDING_BLOCK);
+    if ((block) && (verify_block(block, d))) write_block(path, block);
 
-    if ((!block) || (!verify_block(block, d))) exit(5);
-
-    write_block(path, block);
     remove(FILE_PENDING_VOTES);
+    delete_block(block);
 }
 
 int strcmp_unsigned(const unsigned char *s1, const unsigned char *s2) {
@@ -141,7 +131,10 @@ void Simulation(int d, int sizeC, int sizeV) {
         }
         tmp = tmp->next;
     }
+    delete_tree(tree);
     delete_cell_protected(decl);
+
+    
     CellTree *tr = read_tree();
     print_tree(tr);
     Key *key = compute_winner_BT(tr, candidates, voters, sizeC, sizeV);
@@ -149,4 +142,6 @@ void Simulation(int d, int sizeC, int sizeV) {
     delete_tree(tr);
     delete_list_key(voters);
     delete_list_key(candidates);
+    free(author);
+    free(sKey);
 }

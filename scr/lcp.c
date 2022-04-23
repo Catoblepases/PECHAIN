@@ -6,9 +6,7 @@
 
 /*Alloue et initialise une cellule de liste chaînée de déclarations signées.*/
 CellProtected *create_cell_protected(Protected *pr) {
-    assert(pr);
     CellProtected *LCP = (CellProtected *) malloc(sizeof(CellProtected));
-    assert(LCP);
     LCP->data = pr;
     LCP->next = NULL;
     return LCP;
@@ -16,7 +14,6 @@ CellProtected *create_cell_protected(Protected *pr) {
 
 /*Ajoute une déclaration signée en tête de liste.*/
 void add_head_LCP(CellProtected **LCP, Protected *pr) {
-    assert(pr);
     CellProtected *new = create_cell_protected(pr);
     new->next = *LCP;
     *LCP = new;
@@ -32,11 +29,7 @@ CellProtected *read_protected(char *fileName) {
     while (fgets(buf, 1 << 12, f)) {
         pr = str_to_protected(buf);
         if (!pr) continue;
-        if (!LCP) {
-            LCP = create_cell_protected(pr);
-        } else {
-            add_head_LCP(&LCP, pr);
-        }
+        add_head_LCP(&LCP, pr);
     }
     fclose(f);
     return LCP;
