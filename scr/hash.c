@@ -15,6 +15,7 @@ HashCell *create_hashcell(Key *key) {
     return hc;
 }
 
+/* Retourne la position d'un élément dans la table de hachage.*/
 int hash_function(Key *key, int size) {
     if (!key) exit(5);
     return (key->n * key->val) % size;
@@ -35,6 +36,7 @@ int find_position(HashTable *t, Key *key) {
     return pos;
 }
 
+/*Créer et initialiser  une table de  hachage */
 HashCell **init_tab_hashCell(int size) {
     HashCell **tab = (HashCell **) malloc(sizeof(HashCell *) * size);
     if (!tab) exit(3);
@@ -65,6 +67,7 @@ HashTable *create_hashtable(CellKey *keys, int size) {
     return ht;
 }
 
+/*Supprime une cellule de la table de hachage.*/
 void delete_hashcell(HashCell *t) {
     if (!t) return;
     free(t);
@@ -79,12 +82,14 @@ void delete_hashtable(HashTable *t) {
     free(t);
 }
 
+/*Affiche une cellule de la table de hachage.*/
 void print_Hashcell(HashCell *hc, int idx) {
     char *key = key_to_str(hc->key);
     printf("(%d,%d,%s)\n", idx, hc->val, key);
     free(key);
 }
 
+/*Affiche la table de hachage.*/
 void print_Hashtable(HashTable *Hc) {
     int valide = 0;
     for (int i = 0; i < Hc->size; i++) {

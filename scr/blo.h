@@ -2,6 +2,13 @@
 #define __BLOCK__
 #include "key.h"
 #include "lcp.h"
+
+/* un bloc contiendra :
+— La clé publique de son créateur.
+— Une liste de déclarations de vote.
+— La valeur hachée du bloc.
+— La valeur hachée du bloc précédent.
+— Une preuve de travail.*/
 typedef struct block {
     Key *author;
     CellProtected *votes;

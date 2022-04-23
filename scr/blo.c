@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Retourne la valeur hachée d'une chaîne de caractères obtenue par l'algorithme SHA256.*/
 unsigned char *str_to_SHA256(const char *str) {
     unsigned char *d = SHA256((const unsigned char *) str, strlen((const char *) str), 0);
     char *out = malloc(sizeof(char) * (strlen((char *) str) * 2 + 1));
@@ -59,6 +60,7 @@ unsigned char *read_hash(char *buf) {
     return (unsigned char *) _strndup(buf, strlen(buf) - 1);
 }
 
+/* Lire un bloc depuis un fichier.*/
 Block *read_block(char *fileName) {
     FILE *f = fopen(fileName, "r");
     if (!f) return NULL;
@@ -102,6 +104,8 @@ char *block_to_str(Block *block) {
     return buf;
 }
 
+/*Pour rendre un bloc valide, on commence avec l'attribut nonce égal à zéro, 
+puis on incrémente l'attribut nonce jusqu'à ce que la valeur hachée du bloc commence par d zéros successifs.*/
 void compute_proof_of_work(Block *B, int d) {
     B->nonce = 0;
     while (!verify_and_update_block(B, d)) {
@@ -120,6 +124,7 @@ int verify_and_update_block(Block *block, int d) {
     return 1;
 }
 
+/*Verifie qu'un bloc est valide.*/
 int verify_block(Block *block, int d) {
     if (!block->hash) return 0;
     for (int i = 0; i < d; i++) {
@@ -144,6 +149,7 @@ void delete_block_partial(Block *b) {
     free(b);
 }
 
+/*Supprime un bloc.*/
 void delete_block(Block *b) {
     if (!b) return;
     if (b->hash) free(b->hash);
@@ -152,6 +158,7 @@ void delete_block(Block *b) {
     free(b);
 }
 
+/*Créer et initialiser un bloc.*/
 Block *init_block(Key *author, CellProtected *lcp) {
     Block *block = (Block *) malloc(sizeof(Block));
     block->author = author;
