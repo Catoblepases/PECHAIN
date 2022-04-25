@@ -39,6 +39,9 @@ char *protected_to_str(Protected *pr) {
     return out;
 }
 
+/**Le passage d'une Protection à sa représentation sous forme de chaîne de caractères avec une variable locale
+ * statique signifie qu'aucune mémoire n'est libérée, mais que chaque appel à la fonction écrase le résultat de l'appel
+ * précédent. */
 char *protected_to_str_static(Protected *pr) {
     if (!pr) return "null";
     static char out[1 << 16];
@@ -75,6 +78,7 @@ void free_protected(Protected *pr) {
     }
 }
 
+/** Vérifie si num est dans le tableau, si c'est le cas retourne 1 sinon retourne 0. */
 int inside(int *tab, int size, int num) {
     for (int i = 0; i < size; i++) {
         if (tab[i] == num) return 1;
@@ -143,7 +147,6 @@ void generate_random_data(int nbCitoyen, int nbCandidate) {
     Protected *pr;
     int vote;
     char *str;
-
     for (int i = 0; i < nbCitoyen; i++) {
         // Générer aléatoirement le numéro du candidat choisi par le citoyen.
         vote = rand() % nbCandidate;
@@ -152,17 +155,17 @@ void generate_random_data(int nbCitoyen, int nbCandidate) {
         str = key_to_str(pKey[candidate[vote]]);
         // L'information est la clé publique des candidats
         pr = init_protected(pKey[i], str, sign(str, sKey[i]));
-
+        // Vérifier si le protégé est valide
         if (verify(pr)) {
             buf = protected_to_str(pr);
             fprintf(fDecl, "%s\n", buf);
             if (buf) free(buf);
         }
-
+        // Libération de la mémoire
         if (str) free(str);
         if (pr) free_protected(pr);
     }
-
+    // Libération de la mémoire
     for (int i = 0; i < nbCitoyen; i++) {
         free(sKey[i]);
         free(pKey[i]);

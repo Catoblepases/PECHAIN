@@ -15,8 +15,8 @@ CellTree *create_node(Block *b) {
     return ct;
 }
 
-/*Mettre à jour la hauteur du noeud father quand l'un de ses fils a été modifié: 
-la hauteur du noeud father doit être égale au max entre sa hauteur courante et la hauteur du noeud child + 1. 
+/*Mettre à jour la hauteur du noeud father quand l'un de ses fils a été modifié:
+la hauteur du noeud father doit être égale au max entre sa hauteur courante et la hauteur du noeud child + 1.
 Cette fonction doit retourner 1 si la hauteur du noeud father a changé, et 0 sinon.*/
 int update_height(CellTree *father, CellTree *child) {
     if (!father || !child) return 0;
@@ -34,14 +34,14 @@ void add_child(CellTree *father, CellTree *child) {
 
     if (!father->firstChild) {
         father->firstChild = child;
-    } else {//s'il existe déjà un fils
+    } else { // s'il existe déjà un fils
         child->nextBro = father->firstChild;
         father->firstChild = child;
     }
     child->father = father;
     CellTree *Tfather = father;
     while (Tfather) {
-        //Mettre à jour la houteur du noeud Tfather
+        // Mettre à jour la houteur du noeud Tfather
         update_height(Tfather, child);
         child = Tfather;
         Tfather = Tfather->father;
@@ -85,6 +85,7 @@ void delete_tree(CellTree *ct) {
     delete_node(ct);
 }
 
+/*Supprimer l'arbre ne supprime pas la liste des déclarations*/
 void delete_tree_partial(CellTree *ct) {
     if (!ct) return;
     delete_tree_partial(ct->firstChild);
@@ -125,7 +126,8 @@ CellProtected *fusion(CellProtected *lcp1, CellProtected *lcp2) {
     return lcp1;
 }
 
-/* Retourner la liste obtenue par fusion des listes chaînées de déclarations contenues dans les blocs de la plus longue chaîne.*/
+/* Retourner la liste obtenue par fusion des listes chaînées de déclarations contenues dans les blocs de la plus longue
+ * chaîne.*/
 CellProtected *longestList(CellTree *tree) {
     if (!tree) return NULL;
     return fusion(tree->block->votes, longestList(highest_child(tree)));

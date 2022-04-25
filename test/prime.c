@@ -1,4 +1,5 @@
 #include "scr/prime.h"
+#include "scr/utility.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -6,12 +7,12 @@
 #include <time.h>
 
 void q1_5() {
-    FILE *f = fopen("q1_5.csv", "w");
+    FILE *f = fopen("./temp/q1_5.csv", "w");
     fprintf(f, "m,time1(ms),time2(ms)\n");
     time_t temp_initial, temp_final;
     long a, m, n;
     long N1 = 10000, N2 = 100;
-    for (m = 0; m < (1 << 16); m += 10) {
+    for (m = 0; m < UP_SIZE_TEST_MOD_POW; m += 10) {
         if (m > 1 << 8) {
             N1 = 100000;
             N2 = 1000;
@@ -37,7 +38,7 @@ void q1_5() {
 void q1_2() {
     int temp_final = 0, temp_initial = 0, b = 0;
     long p, res;
-    FILE *f = fopen("q1_2.csv", "w");
+    FILE *f = fopen("./temp/q1_2.csv", "w");
     fprintf(f, "m,time(ms)\n");
     for (int i = 0; i < 10; i++) {
         temp_final = 0, temp_initial = 0;
@@ -59,16 +60,19 @@ void q1_2() {
 
 void check_validity() {
     // is_prime_naive
-    assert(is_prime_naive(2) == 1);
-    assert(is_prime_naive(173) == 1);
-    assert(is_prime_naive(7643) == 1);
-    assert(is_prime_naive(2851) == 1);
-    assert(is_prime_naive(223) == 1);
     assert(is_prime_naive(1) == 0);
-    assert(is_prime_naive(7234) == 0);
-    assert(is_prime_naive(976) == 0);
-    assert(is_prime_naive(936497) == 0);
-    assert(is_prime_naive(38) == 0);
+    assert(is_prime_naive(2) == 1);
+    assert(is_prime_naive(42) == 0);
+    assert(is_prime_naive(53) == 1);
+    assert(is_prime_naive(199) == 1);
+    assert(is_prime_naive(267) == 0);
+    assert(is_prime_naive(977) == 1);
+    assert(is_prime_naive(983) == 1);
+    assert(is_prime_naive(2601) == 0);
+    assert(is_prime_naive(3371) == 1);
+    assert(is_prime_naive(3333) == 0);
+    assert(is_prime_naive(7643) == 1);
+    assert(is_prime_naive(17497) == 1);
     // modpow_naive
     assert(modpow_naive(2, 10, 255) == 4);
     assert(modpow_naive(5, 10, 56) == 9);

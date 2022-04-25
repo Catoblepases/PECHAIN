@@ -25,7 +25,6 @@ void compute_proof_of_work(Block *B, int d);
 int verify_block(Block *, int d);
 void delete_block(Block *b);
 void delete_block_partial(Block *b);
-void free_block(Block *b);
 int verify_and_update_block(Block *block, int d);
 Block *create_random_block(Key *author);
 Block *init_block(Key *author, CellProtected *lcp);

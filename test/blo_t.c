@@ -9,7 +9,7 @@ int main(void) {
     print_with_sepatator("create author");
     Key *author = (Key *) malloc(sizeof(Key));
     Key *sKey = (Key *) malloc(sizeof(Key));
-    init_pair_keys(author, sKey, 1 << 3, 1 << 8);
+    init_pair_keys(author, sKey, 1 << LOW_SIZE, 1 << UP_SIZE);
     // creation d'un tableau de blocs
     CellTree **tab_node = (CellTree **) malloc(sizeof(CellTree *) * NB_BLOCKS);
     print_with_sepatator("create_node");

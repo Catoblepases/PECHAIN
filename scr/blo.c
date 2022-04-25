@@ -57,6 +57,7 @@ char *_strndup(char *str, int size) {
     return (char *) memcpy(new, str, len);
 }
 
+/**Lire la valeur de hachage si la valeur de hachage est (null) alors lire comme NULL */
 unsigned char *read_hash(char *buf) {
     if (strncmp(buf, "(null)", strlen("(null)")) == 0) {
         return NULL;
@@ -108,7 +109,7 @@ char *block_to_str(Block *block) {
     return buf;
 }
 
-/*Pour rendre un bloc valide, on commence avec l'attribut nonce égal à zéro, 
+/*Pour rendre un bloc valide, on commence avec l'attribut nonce égal à zéro,
 puis on incrémente l'attribut nonce jusqu'à ce que la valeur hachée du bloc commence par d zéros successifs.*/
 void compute_proof_of_work(Block *B, int d) {
     B->nonce = 0;
@@ -117,6 +118,7 @@ void compute_proof_of_work(Block *B, int d) {
     }
 }
 
+/**Mettre à jour le hachage d'un bloc et vérifier si un bloc est valide. */
 int verify_and_update_block(Block *block, int d) {
     if (block->hash) free(block->hash);
     char *str = block_to_str(block);
@@ -153,7 +155,7 @@ void delete_block_ex(Block *b) {
     free(b);
 }
 
-
+/*Supprimer le bloc ne supprime pas la liste des déclarations*/
 void delete_block_partial(Block *b) {
     if (b->hash) free(b->hash);
     if (b->author) free(b->author);
@@ -183,6 +185,7 @@ Block *init_block(Key *author, CellProtected *lcp) {
     return block;
 }
 
+/**Étant donné l'auteur, générez un bloc aléatoire*/
 Block *create_random_block(Key *author) {
     generate_random_data(NB_KEYS, NB_BLOCK_DECLARATIONS);
     CellProtected *decl = read_protected(FILE_DECLARATIONS);

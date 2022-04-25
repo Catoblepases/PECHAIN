@@ -1,5 +1,6 @@
 #include "scr/rsa.h"
 #include "scr/prime.h"
+#include "scr/utility.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,8 +10,8 @@
 int main() {
     srand(time(NULL));
     // Generation de cle:
-    long p = random_prime_number(5, 10, 500);
-    long q = random_prime_number(5, 10, 500);
+    long p = random_prime_number(LOW_SIZE, UP_SIZE, NB_TEST_MILLER);
+    long q = random_prime_number(LOW_SIZE, UP_SIZE, NB_TEST_MILLER);
     printf("p=%ld, q=%ld\n", p, q);
     long n, s, u;
     generate_key_values(p, q, &n, &s, &u);

@@ -1,5 +1,6 @@
 #include "key.h"
 #include "rsa.h"
+#include "utility.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +12,7 @@ void init_key(Key *key, long val, long n) {
     key->val = val;
 }
 
+/** Comparez deux clés pour voir si elles sont identiques, si elles sont identiques, retournez 1, sinon retournez 0. */
 int compare_key(Key *key1, Key *key2) {
     if (!key1 || !key2) return 0;
     return (key1->n == key2->n) && (key1->val == key2->val);
@@ -19,8 +21,8 @@ int compare_key(Key *key1, Key *key2) {
 /*Initialiser une clé publique et une clé secrète (déjà allouées) en utilisant le protocole RSA.*/
 void init_pair_keys(Key *pKey, Key *sKey, int low_size, int up_size) {
     // Generation de cle:
-    long p = random_prime_number(low_size, up_size, 5000);
-    long q = random_prime_number(low_size, up_size, 5000);
+    long p = random_prime_number(low_size, up_size, NB_TEST_MILLER);
+    long q = random_prime_number(low_size, up_size, NB_TEST_MILLER);
     long n, s, u;
     generate_key_values(p, q, &n, &s, &u);
     init_key(pKey, s, n);

@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from numpy import polyfit, poly1d
 
-data = pd.read_csv("proof_of_work.csv")
+data = pd.read_csv("temp/proof_of_work.csv")
 
 print(data)
 
@@ -19,5 +19,5 @@ plt.xlabel("d")
 plt.ylabel("temp moyen(s)")
 # plt.legend(loc="upper right")
 
-plt.savefig("q7_8.png")
+plt.savefig("temp/q7_8.png")
 plt.show()

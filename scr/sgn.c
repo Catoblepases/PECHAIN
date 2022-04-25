@@ -40,23 +40,7 @@ char *signature_to_str(Signature *sgn) {
     return result;
 }
 
-char *signature_to_str_static(Signature *sgn) {
-    static char result[1 << 16];
-    result[0] = '#';
-    int pos = 1;
-    char buffer[156];
-    for (int i = 0; i < sgn->size; i++) {
-        sprintf(buffer, "%lx", sgn->content[i]);
-        for (int j = 0; j < strlen(buffer); j++) {
-            result[pos] = buffer[j];
-            pos = pos + 1;
-        }
-        result[pos] = '#';
-        pos = pos + 1;
-    }
-    result[pos] = '\0';
-    return result;
-}
+
 
 /**permettent de passer d’un chaıne de caracteres a structure Signature*/
 Signature *str_to_signature(char *str) {
@@ -81,6 +65,24 @@ Signature *str_to_signature(char *str) {
     }
     content = realloc(content, num * sizeof(long));
     return init_signature(content, num);
+}
+
+char *signature_to_str_static(Signature *sgn) {
+    static char result[1 << 16];
+    result[0] = '#';
+    int pos = 1;
+    char buffer[156];
+    for (int i = 0; i < sgn->size; i++) {
+        sprintf(buffer, "%lx", sgn->content[i]);
+        for (int j = 0; j < strlen(buffer); j++) {
+            result[pos] = buffer[j];
+            pos = pos + 1;
+        }
+        result[pos] = '#';
+        pos = pos + 1;
+    }
+    result[pos] = '\0';
+    return result;
 }
 
 /**Liberer l'espace occupé par signature*/
