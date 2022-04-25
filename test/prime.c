@@ -10,11 +10,11 @@ void q1_5() {
     fprintf(f, "m,time1(ms),time2(ms)\n");
     time_t temp_initial, temp_final;
     long a, m, n;
-    long N1 = 100000, N2 = 100;
-    for (m = 0; m < 1 << 8; m += 10) {
-        if (m > 1 << 10) {
-            N1 = 10000;
-            N2 = 5;
+    long N1 = 10000, N2 = 100;
+    for (m = 0; m < (1 << 16); m += 10) {
+        if (m > 1 << 8) {
+            N1 = 100000;
+            N2 = 1000;
         }
         a = rand_long(1, 1 << 8);
         n = rand_long(1, 1 << 8);

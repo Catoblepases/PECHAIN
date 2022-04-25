@@ -17,7 +17,7 @@ HashCell *create_hashcell(Key *key) {
 
 /* Retourne la position d'un élément dans la table de hachage.*/
 int hash_function(Key *key, int size) {
-    if (!key) exit(5);
+    if (!key) exit(4);
     return (key->n * key->val) % size;
 }
 

@@ -32,7 +32,7 @@ CellTree *init_tree(Key *author, int d) {
 void create_block(CellTree *tree, Key *author, int d) {
     Block *block = init_block(author, read_protected(FILE_PENDING_VOTES));
     CellTree *lastNode = last_node(tree);
-    if (!lastNode) exit(5);
+    if (!lastNode) exit(4);
     block->previous_hash = (unsigned char *) strdup((char *) lastNode->block->hash);
     compute_proof_of_work(block, d);
     CellTree *new = create_node(block);

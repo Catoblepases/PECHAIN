@@ -19,30 +19,30 @@ m = data["m"]
 
 plt.figure(figsize=(15, 3), dpi=100)
 
-# plt.subplot(3, 1, 1)
-# plt.title(
-#     "exponentiation modulaire courbes de temps en fonction de m pour mod_pow_naive")
-# plt.xlabel("m")
-# plt.ylabel("time(ms)")
-# plt.scatter(m, time2, s=3, label="mod_pow_naive")
-# plt.legend(loc="upper right")
-
-# plt.subplot(3, 1, 2)
-# plt.title(
-#     "exponentiation modulaire courbes de temps en fonction de m pour mod_pow")
-# plt.xlabel("m")
-# plt.ylabel("time(ms)")
-# # coeff = polyfit(m, time1, 1)
-# plt.scatter(m, time1, s=3, label="mod_pow")
-# plt.legend(loc="upper right")
-
-# plt.subplot(3, 1, 3)
-plt.title("Comparez les performances des deux methodes")
-plt.scatter(m, time2, s=3, label="mod_pow_naive")
-plt.scatter(m, time1, s=3, label="mod_pow")
+plt.subplot(1, 2, 1)
+plt.title(
+    "exponentiation modulaire courbes de temps en fonction de m pour mod_pow_naive",fontsize=10)
 plt.xlabel("m")
 plt.ylabel("time(ms)")
+plt.scatter(m, time2, s=3, label="mod_pow_naive")
 plt.legend(loc="upper right")
+
+plt.subplot(1, 2, 2)
+plt.title(
+    "exponentiation modulaire courbes de temps en fonction de m pour mod_pow",fontsize=10)
+plt.xlabel("m")
+plt.ylabel("time(ms)")
+# coeff = polyfit(m, time1, 1)
+plt.scatter(m, time1, s=3, label="mod_pow")
+plt.legend(loc="upper right")
+
+# plt.subplot(3, 1, 3)
+# plt.title("Comparez les performances des deux m´ethodes")
+# plt.scatter(m, time2, s=3, label="mod_pow_naive")
+# plt.scatter(m, time1, s=3, label="mod_pow")
+# plt.xlabel("m")
+# plt.ylabel("time(ms)")
+# plt.legend(loc="upper right")
 
 # d = time2/time1
 # coeff = polyfit(m, d, 1)
@@ -54,5 +54,5 @@ plt.legend(loc="upper right")
 # plt.xlabel("m")
 # plt.ylabel("time(ms)")
 # plt.legend(loc="upper right")
-plt.savefig("q1_5_2.png")
+plt.savefig("q1_5.png")
 plt.show()
