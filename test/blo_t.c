@@ -7,9 +7,8 @@
 int main(void) {
     // Générer des volontaires
     print_with_sepatator("create author");
-    Key *author = (Key *) malloc(sizeof(Key));
-    Key *sKey = (Key *) malloc(sizeof(Key));
-    init_pair_keys(author, sKey, 1 << LOW_SIZE, 1 << UP_SIZE);
+    Key *author = str_to_key("(1681,57)");
+    Key *sKey = str_to_key("(1681,393)");
     // creation d'un tableau de blocs
     CellTree **tab_node = (CellTree **) malloc(sizeof(CellTree *) * NB_BLOCKS);
     print_with_sepatator("create_node");

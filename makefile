@@ -24,6 +24,9 @@ all :
 test::
 	$(MAKE) -C ./test run
 
+checkMem::
+	$(MAKE) -C ./test $@
+
 $(TEST_OPTION):: 
 	$(MAKE) -C ./test $@
 

@@ -14,6 +14,31 @@ run: $(TEST_FILES)
 		./$$test; \
 	done
 
+checkMem: $(TEST_FILES)
+	for test in $(TEST_FILES); do \
+		echo  ;\
+		echo ++++++++++++++++++++++++++++++++++++++++++++++++; \
+		echo test: "$$test"; \
+		echo ++++++++++++++++++++++++++++++++++++++++++++++++; \
+		echo  ;\
+		valgrind -s  --leak-check=full --track-origins=yes --log-file=./log/$$test.log --num-callers=30 ./$$test; \
+	done
+
+clean :
+	rm -f *.o
+	rm -f *.exe
+	rm -f $(TEST_FILES)
+	rm -f ./blockchain/*.txt
+
+cleanAll:
+	rm -f *.o *.exe *.txt *.csv *.log
+	rm -f $(TEST_FILES)
+	rm -f ./temp/*.txt
+	rm -f ./blockchain/*.txt
+
+$(TEST_FILES): %: $(D_LIB)/%.o %.c
+	$(CC) $(CFLAGS) -o $@ $@.c $(TEST_FILES:%=$(D_LIB)/%.o) -lssl -lcrypto
+
 ex1: prime
 	echo  ;\
 	echo ++++++++++++++++++++++++++++++++++++++++++++++++; \
@@ -91,18 +116,3 @@ ex9: prime rsa key sgn pro lck lcp hash blo blo_t sml
 	echo ++++++++++++++++++++++++++++++++++++++++++++++++; \
 	echo  ;\
 	./sml; \
-
-clean :
-	rm -f *.o
-	rm -f *.exe
-	rm -f $(TEST_FILES)
-	rm -f ./blockchain/*.txt
-
-cleanAll:
-	rm -f *.o *.exe *.txt *.csv *.log
-	rm -f $(TEST_FILES)
-	rm -f ./temp/*.txt
-	rm -f ./blockchain/*.txt
-
-$(TEST_FILES): %: $(D_LIB)/%.o %.c
-	$(CC) $(CFLAGS) -o $@ $@.c $(TEST_FILES:%=$(D_LIB)/%.o) -lssl -lcrypto

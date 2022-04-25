@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from numpy import polyfit, poly1d
 
-data = pd.read_csv("temp/proof_of_work.csv")
+data = pd.read_csv("./temp/proof_of_work.csv")
 
 print(data)
 

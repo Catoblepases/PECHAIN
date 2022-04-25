@@ -54,15 +54,15 @@ void add_block(int d, char *name) {
     delete_block(block);
 }
 
-int strcmp_unsigned(const unsigned char *s1, const unsigned char *s2) {
-    unsigned char *p1 = (unsigned char *) s1;
-    unsigned char *p2 = (unsigned char *) s2;
-    while ((*p1) && (*p1 == *p2)) {
-        ++p1;
-        ++p2;
-    }
-    return (*p1 - *p2);
-}
+// int strcmp_unsigned(const unsigned char *s1, const unsigned char *s2) {
+//     unsigned char *p1 = (unsigned char *) s1;
+//     unsigned char *p2 = (unsigned char *) s2;
+//     while ((*p1) && (*p1 == *p2)) {
+//         ++p1;
+//         ++p2;
+//     }
+//     return (*p1 - *p2);
+// }
 
 // LECTURE DE L’ARBRE ET CALCUL DU GAGNANT
 /*Construire l'arbre correspondant aux blocs contenus dans le répertoire  "Blockchain".*/
@@ -96,7 +96,7 @@ CellTree *read_tree() {
     for (int i = 0; i < idx; i++) {
         for (int j = 0; j < idx; j++) {
             if (!(cell[j]->block->previous_hash)) continue;
-            if (strcmp_unsigned(cell[i]->block->hash, cell[j]->block->previous_hash) == 0) {
+            if (strcmp((char *) cell[i]->block->hash, (char *) cell[j]->block->previous_hash) == 0) {
                 // Chaque fils T[j] est ajouté à la liste des fils du noeud T[i] .
                 printf("add child %d %d\n", i, j);
                 add_child(cell[i], cell[j]);
@@ -147,7 +147,7 @@ void Simulation(int d, int sizeC, int sizeV) {
         submit_vote(tmp->data);
         // 4. la creation d’un bloc valide tous les 10 votes soumis
         if ((idx++ % NB_BLOCK_DECLARATIONS == NB_BLOCK_DECLARATIONS - 1) || (tmp->next == NULL)) {
-            if (!(tmp->next)) idx+=10;
+            if (!(tmp->next)) idx += 10;
             fileName = (char *) malloc(sizeof(char) * (1 << 8));
             if (!fileName) exit(3);
             sprintf(fileName, "%s%d%s", FILE_BLOCK_PREFIX, (idx / NB_BLOCK_DECLARATIONS), FILE_BLOCK_SUFFIX);

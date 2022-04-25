@@ -47,7 +47,7 @@ int main(void) {
     int d = 0;
     FILE *f = fopen(FILE_PROOF_OF_WORK, "w");
     fprintf(f, "d,time\n");
-    while (temps < 0.2) {
+    while (temps < TEMP_MAX) {
         block->nonce = 0;
         time_initial = clock();
         compute_proof_of_work(block, d);
@@ -59,6 +59,7 @@ int main(void) {
     }
     fclose(f);
     free(sKey);
+    free(pKey);
     delete_block(block_read);
     delete_block(block);
     return 0;

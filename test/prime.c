@@ -78,19 +78,19 @@ void check_validity() {
     assert(modpow_naive(5, 10, 56) == 9);
     assert(modpow_naive(7, 11, 33) == 7);
     assert(modpow_naive(3, 24, 22) == 15);
-    assert(modpow_naive(53534, 0, 232) == 1);
     assert(modpow_naive(6, 4, 1296) == 0);
     assert(modpow_naive(8, 5, 7) == 1);
     assert(modpow_naive(12, 5, 2) == 0);
+    assert(modpow_naive(53534, 0, 232) == 1);
     // modpow
     assert(modpow(2, 10, 255) == 4);
     assert(modpow(5, 10, 56) == 9);
     assert(modpow(7, 11, 33) == 7);
     assert(modpow(3, 24, 22) == 15);
-    assert(modpow(53534, 0, 232) == 1);
     assert(modpow(6, 4, 1296) == 0);
     assert(modpow(8, 5, 7) == 1);
     assert(modpow(12, 5, 2) == 0);
+    assert(modpow(53534, 0, 232) == 1);
 }
 
 int main(int argc, char const *argv[]) {

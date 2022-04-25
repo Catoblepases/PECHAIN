@@ -28,8 +28,11 @@
 #define FILE_BLOCKS_TEST "./temp/blocks_test.txt"
 
 // Constantes de test
-#define NB_BLOCKS 10   // Nombre de bloc
+#define NB_KEYS_TEST 10    // Nombre d'électeurs
+#define NB_CANDIDATS_TEST 2 // Nombre de candidats
+#define NB_BLOCKS 10   // Nombre de bloc pour tester
 #define UP_SIZE_TEST_MOD_POW 1<<8
+#define TEMP_MAX 0.2
 
 // Macros créées pour faciliter les tests
 #define print_with_sepatator(...) printf("-----------%s-----------\n", __VA_ARGS__)
